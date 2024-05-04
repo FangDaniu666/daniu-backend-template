@@ -18,9 +18,4 @@ public interface CommonConstant {
      */
     String SORT_ORDER_DESC = " descend";
 
-    /**
-     * 定时任务时间周期，单位为秒
-     */
-    int QUARTZ_TIME_PERIOD = 60 * 60 * 2;
-
 }

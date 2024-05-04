@@ -15,16 +15,10 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 @SpringBootApplication
 @MapperScan("com.daniu.mapper")
 @EnableAspectJAutoProxy(proxyTargetClass = true, exposeProxy = true)
-public class DaniuBackendTemplateApplication /*implements CommandLineRunner*/ {
+public class DaniuBackendTemplateApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(DaniuBackendTemplateApplication.class, args);
     }
-
-    /*@Override
-    public void run(String... args) throws Exception {
-        // todo 定时任务启动，可视情况予以开闭
-        QuartzExecute.doQuartzTask(CommonConstant.QUARTZ_TIME_PERIOD);
-    }*/
 
 }
