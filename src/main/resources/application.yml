@@ -1,0 +1,82 @@
+# 公共配置文件
+spring:
+  application:
+    name: daniu-backend-template
+  # 默认 dev 环境
+  profiles:
+    active: druid,dev
+  # 文件上传
+  servlet:
+    multipart:
+      # 启动开关
+      enabled: true
+      # 文件大小限制
+      max-file-size: 50MB
+      # 限制整个请求的大小，包括所有文件和其他部分
+      max-request-size: 100MB
+
+  banner:
+    # todo 项目启动的图案配置，可自行修改：https://ascii-generator.site/t
+    location: banner.txt
+  # 支持 swagger3
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  # 配置时间返回格式
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+  # Quartz 的配置，对应 QuartzProperties 配置类
+  quartz:
+    job-store-type: memory # Job 存储器类型。默认为 memory 表示内存，可选 jdbc 使用数据库。
+    auto-startup: true # Quartz 是否自动启动
+    startup-delay: 0 # 延迟 N 秒启动
+    wait-for-jobs-to-complete-on-shutdown: true # 应用关闭时，是否等待定时任务执行完成。默认为 false ，建议设置为 true
+    overwrite-existing-jobs: false # 是否覆盖已有 Job 的配置
+    properties: # 添加 Quartz Scheduler 附加属性
+      org:
+        quartz:
+          threadPool:
+            threadCount: 25 # 线程池大小。默认为 10 。
+            threadPriority: 5 # 线程优先级
+            class: org.quartz.simpl.SimpleThreadPool # 线程池类型
+
+# todo 使用需修改参数，否则则注释
+minio:
+  endpoint: http://192.168.2.200:9090
+  accessKey: Fang@Daniu
+  secretKey: Fang@Daniu
+  bucketName: daniubucket
+
+mybatis-plus:
+  #实体扫描，多个package用逗号或者分号分隔
+  type-aliases-package: com.daniu.model.entity
+  configuration:
+    #数据库大写下划线转换
+    map-underscore-to-camel-case: false
+    #开启sql日志
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      logic-delete-field: isDelete # 全局逻辑删除的实体字段名
+      logic-delete-value: 1 # 逻辑已删除值（默认为 1）
+      logic-not-delete-value: 0 # 逻辑未删除值（默认为 0）
+    # 启动时logo显示开关
+    banner: off
+
+############## Sa-Token 配置 (文档: https://sa-token.cc) ##############
+sa-token:
+  # token 名称（同时也是 cookie 名称）
+  token-name: sa-token
+  # token 有效期（单位：秒） 默认30天，-1 代表永久有效
+  timeout: 2592000
+  # token 最低活跃频率（单位：秒），如果 token 超过此时间没有访问系统就会被冻结，默认-1 代表不限制，永不冻结
+  active-timeout: -1
+  # 是否允许同一账号多地同时登录 （为 true 时允许一起登录, 为 false 时新登录挤掉旧登录）
+  is-concurrent: true
+  # 在多人登录同一账号时，是否共用一个 token （为 true 时所有登录共用一个 token, 为 false 时每次登录新建一个 token）
+  is-share: true
+  # token 风格（默认可取值：uuid、simple-uuid、random-32、random-64、random-128、tik）
+  token-style: uuid
+  # 是否输出操作日志
+  is-log: true
