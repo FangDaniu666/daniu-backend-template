@@ -4,8 +4,11 @@ import cn.dev33.satoken.SaManager;
 import cn.dev33.satoken.context.SaHolder;
 import cn.dev33.satoken.filter.SaServletFilter;
 import cn.dev33.satoken.interceptor.SaInterceptor;
+import cn.dev33.satoken.jwt.StpLogicJwtForSimple;
+import cn.dev33.satoken.jwt.StpLogicJwtForStateless;
 import cn.dev33.satoken.router.SaHttpMethod;
 import cn.dev33.satoken.router.SaRouter;
+import cn.dev33.satoken.stp.StpLogic;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.dev33.satoken.util.SaResult;
 import org.springframework.context.annotation.Bean;
@@ -15,12 +18,22 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class SaTokenConfig implements WebMvcConfigurer {
+    // Sa-Token 整合 jwt (Simple 简单模式)
+    @Bean
+    public StpLogic getStpLogicJwt() {
+        return new StpLogicJwtForSimple();
+    }
+
     // 注册 Sa-Token 拦截器，打开注解式鉴权功能
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         // 注册 Sa-Token 拦截器，打开注解式鉴权功能
         registry.addInterceptor(new SaInterceptor(handler -> StpUtil.checkLogin()).isAnnotation(true))
-                .addPathPatterns("/**").excludePathPatterns("/**");
+                .addPathPatterns("/**").excludePathPatterns(
+                        "/user/login",
+                        "/user/logout",
+                        "/user/register"
+                ); // 拦截指定路由
     }
 
     /**
@@ -34,24 +47,15 @@ public class SaTokenConfig implements WebMvcConfigurer {
                 .addInclude("/**").addExclude("/favicon.ico")
 
                 // 认证函数: 每次请求执行
-                .setAuth(obj ->
-                {
-                    SaManager.getLog().debug("----- 请求path={}  提交token={}", SaHolder.getRequest().getRequestPath(), StpUtil.getTokenValue());
-                    // ...
-                })
+                .setAuth(obj -> SaManager.getLog().debug("----- 请求path={}  提交token={}",
+                        SaHolder.getRequest().getRequestPath(), StpUtil.getTokenValue()))
 
                 // 异常处理函数：每次认证函数发生异常时执行此函数
-                .setError(e ->
-                {
-                    return SaResult.error(e.getMessage());
-                })
+                .setError(e -> SaResult.error(e.getMessage()))
 
                 // 前置函数：在每次认证函数之前执行
-                .setBeforeAuth(obj ->
-                {
+                .setBeforeAuth(obj -> {
                     SaHolder.getResponse()
-
-                            // ---------- 设置跨域响应头 ----------
                             // 允许指定域访问跨域资源
                             .setHeader("Access-Control-Allow-Origin", "*")
                             // 允许所有请求方式

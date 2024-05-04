@@ -7,7 +7,7 @@ server:
     # cookie 30 天过期
     session:
       cookie:
-        max-age: 2592000
+        max-age: 0
 spring:
   # todo 使用需修改参数，否则则注释
   # redis配置
