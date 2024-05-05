@@ -1,11 +1,13 @@
 package com.daniu.controller;
 
 import cn.dev33.satoken.annotation.SaCheckRole;
+import cn.dev33.satoken.stp.StpUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.daniu.constant.UserConstant;
+import com.daniu.utils.NullAwareBeanUtils;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 import com.daniu.common.BaseResponse;
 import com.daniu.common.DeleteRequest;
@@ -18,6 +20,7 @@ import com.daniu.model.entity.User;
 import com.daniu.model.vo.LoginUserVO;
 import com.daniu.model.vo.UserVO;
 import com.daniu.service.UserService;
+
 import java.util.List;
 
 /**
@@ -51,10 +54,11 @@ public class UserController {
         String userAccount = userRegisterRequest.getUserAccount();
         String userPassword = userRegisterRequest.getUserPassword();
         String checkPassword = userRegisterRequest.getCheckPassword();
-        if (StringUtils.isAnyBlank(userAccount, userPassword, checkPassword)) {
+        String userEmail = userRegisterRequest.getUserEmail();
+        if (StringUtils.isAnyBlank(userAccount, userPassword, checkPassword, userEmail)) {
             return null;
         }
-        long result = userService.userRegister(userAccount, userPassword, checkPassword);
+        long result = userService.userRegister(userAccount, userPassword, checkPassword, userEmail);
         return ResultUtils.success(result);
     }
 
@@ -90,7 +94,6 @@ public class UserController {
 
     /**
      * 获取当前登录用户
-     *
      */
     @GetMapping("/get/login")
     public BaseResponse<LoginUserVO> getLoginUser() {
@@ -107,13 +110,13 @@ public class UserController {
      * @return
      */
     @PostMapping("/add")
-    // @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    @SaCheckRole(UserConstant.ADMIN_ROLE)
     public BaseResponse<Long> addUser(@RequestBody UserAddRequest userAddRequest) {
         if (userAddRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         User user = new User();
-        BeanUtils.copyProperties(userAddRequest, user);
+        NullAwareBeanUtils.copyPropertiesIgnoreEmpty(userAddRequest, user);
         boolean result = userService.save(user);
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
         return ResultUtils.success(user.getId());
@@ -126,7 +129,7 @@ public class UserController {
      * @return
      */
     @PostMapping("/delete")
-    // @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    @SaCheckRole(UserConstant.ADMIN_ROLE)
     public BaseResponse<Boolean> deleteUser(@RequestBody DeleteRequest deleteRequest) {
         if (deleteRequest == null || deleteRequest.getId() <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
@@ -142,13 +145,13 @@ public class UserController {
      * @return
      */
     @PostMapping("/update")
-    // @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    @SaCheckRole(UserConstant.ADMIN_ROLE)
     public BaseResponse<Boolean> updateUser(@RequestBody UserUpdateRequest userUpdateRequest) {
         if (userUpdateRequest == null || userUpdateRequest.getId() == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         User user = new User();
-        BeanUtils.copyProperties(userUpdateRequest, user);
+        NullAwareBeanUtils.copyPropertiesIgnoreEmpty(userUpdateRequest, user);
         boolean result = userService.updateById(user);
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
         return ResultUtils.success(true);
@@ -161,7 +164,7 @@ public class UserController {
      * @return
      */
     @GetMapping("/get")
-    // @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    @SaCheckRole(UserConstant.ADMIN_ROLE)
     public BaseResponse<User> getUserById(long id) {
         if (id <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
@@ -191,8 +194,7 @@ public class UserController {
      * @return
      */
     @PostMapping("/list/page")
-    @SaCheckRole("admin")
-    // @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    @SaCheckRole(UserConstant.ADMIN_ROLE)
     public BaseResponse<Page<User>> listUserByPage(@RequestBody UserQueryRequest userQueryRequest) {
         long current = userQueryRequest.getCurrent();
         long size = userQueryRequest.getPageSize();
@@ -233,12 +235,12 @@ public class UserController {
         if (userUpdateMyRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        User loginUser = userService.getLoginUser();
         User user = new User();
-        BeanUtils.copyProperties(userUpdateMyRequest, user);
-        user.setId(loginUser.getId());
+        user.setId(Long.parseLong(StpUtil.getLoginId().toString()));
+        NullAwareBeanUtils.copyPropertiesIgnoreEmpty(userUpdateMyRequest, user);
         boolean result = userService.updateById(user);
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
         return ResultUtils.success(true);
     }
+
 }

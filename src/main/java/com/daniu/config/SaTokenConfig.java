@@ -4,13 +4,15 @@ import cn.dev33.satoken.SaManager;
 import cn.dev33.satoken.context.SaHolder;
 import cn.dev33.satoken.filter.SaServletFilter;
 import cn.dev33.satoken.interceptor.SaInterceptor;
+import cn.dev33.satoken.jwt.SaJwtTemplate;
+import cn.dev33.satoken.jwt.SaJwtUtil;
 import cn.dev33.satoken.jwt.StpLogicJwtForSimple;
-import cn.dev33.satoken.jwt.StpLogicJwtForStateless;
 import cn.dev33.satoken.router.SaHttpMethod;
 import cn.dev33.satoken.router.SaRouter;
 import cn.dev33.satoken.stp.StpLogic;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.dev33.satoken.util.SaResult;
+import cn.hutool.jwt.JWT;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -18,6 +20,17 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class SaTokenConfig implements WebMvcConfigurer {
+
+    public SaTokenConfig() {
+        SaJwtUtil.setSaJwtTemplate(new SaJwtTemplate() {
+            @Override
+            public String generateToken(JWT jwt, String keyt) {
+                // todo 自定义生成token
+                return super.generateToken(jwt, keyt);
+            }
+        });
+    }
+
     // Sa-Token 整合 jwt (Simple 简单模式)
     @Bean
     public StpLogic getStpLogicJwt() {
@@ -30,6 +43,8 @@ public class SaTokenConfig implements WebMvcConfigurer {
         // 注册 Sa-Token 拦截器，打开注解式鉴权功能
         registry.addInterceptor(new SaInterceptor(handler -> StpUtil.checkLogin()).isAnnotation(true))
                 .addPathPatterns("/**").excludePathPatterns(
+                        "/*.html", "/*.css", "/*.js",
+                        "/v3/api-docs/**",
                         "/user/login",
                         "/user/logout",
                         "/user/register"

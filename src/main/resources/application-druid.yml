@@ -36,27 +36,5 @@ spring:
       testWhileIdle: true
       testOnBorrow: false
       testOnReturn: false
-#      webStatFilter:
-#        enabled: true
-#      statViewServlet:
-#        enabled: true
-#        # 设置白名单，不填则允许所有访问
-#        allow:
-#        url-pattern: /druid/*
-#        # todo 使用需修改参数，否则则注释
-#        # 控制台管理用户名和密码
-#        # login-username: ENC(TkR5tN8+CR34YBkXgZP06yhu9V/quoOfVgkaJ+D7xBO6ya6vIig5/CYZc1c5m/o2)
-#        login-username: zzx
-#        # login-password: ENC(FOjCuJ7XStrM43v+LmF2+tQd6nmsVVwbFSNoPSaRAYIN6fcLe8X1PTIUPTZxInv4)
-#        login-password: 123456
-#      filter:
-#        stat:
-#          enabled: true
-#          # 慢SQL记录
-#          log-slow-sql: true
-#          slow-sql-millis: 1000
-#          merge-sql: true
-#        wall:
-#          config:
-#            multi-statement-allow: true
+
 

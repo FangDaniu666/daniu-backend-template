@@ -8,8 +8,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Data
 @Configuration
-public class MinioConfig
-{
+public class MinioConfig {
     @Value("${minio.endpoint}")
     private String endpoint;
     @Value("${minio.accessKey}")
@@ -20,8 +19,7 @@ public class MinioConfig
     private String bucketNameImage;
 
     @Bean
-    public MinioClient minioClient()
-    {
+    public MinioClient minioClient() {
         MinioClient minioClient = MinioClient.builder().endpoint(endpoint).credentials(accessKey, secretKey).build();
         return minioClient;
     }

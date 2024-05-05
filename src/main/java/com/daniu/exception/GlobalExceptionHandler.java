@@ -54,7 +54,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NotLoginException.class)
     public SaResult handlerNotLoginException(NotLoginException nle) throws Exception {
         // 打印堆栈，以供调试
-        nle.printStackTrace();
+        // nle.printStackTrace();
 
         // 判断场景值，定制化异常信息
         String message = "";

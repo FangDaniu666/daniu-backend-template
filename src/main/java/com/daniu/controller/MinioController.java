@@ -1,5 +1,6 @@
 package com.daniu.controller;
 
+import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
@@ -18,7 +19,7 @@ import java.util.List;
 @RequestMapping("/minio")
 public class MinioController {
 
-    @Autowired
+    @Resource
     MinioUtils minioService;
 
     //列表

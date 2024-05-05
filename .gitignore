@@ -2,6 +2,9 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+/logs/
+.mvn/
+
 ### STS ###
 .apt_generated
 .classpath
@@ -29,6 +32,3 @@ build/
 
 ### VS Code ###
 .vscode/
-/logs/
-/.mvn/wrapper/maven-wrapper.jar
-/.mvn/wrapper/maven-wrapper.properties

@@ -3,6 +3,7 @@ package com.daniu.utils.file.minio;
 import io.minio.*;
 import io.minio.http.Method;
 import io.minio.messages.Item;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,9 +20,9 @@ import java.util.concurrent.TimeUnit;
 @Service
 @Slf4j
 public class MinioUtils {
-    @Autowired
+    @Resource
     MinioConfig minioConfig;
-    @Autowired
+    @Resource
     MinioClient minioClient;
 
     //获取列表
@@ -36,11 +37,11 @@ public class MinioUtils {
             Iterable<Result<Item>> results = minioClient.listObjects(listObjectsArgs);
             for (Result<Item> result : results) {
                 Item item = result.get();
-                log.info(item.lastModified() + ", " + item.size() + ", " + item.objectName());
+                log.info("{}, {}, {}", item.lastModified(), item.size(), item.objectName());
                 list.add(item.objectName());
             }
         } catch (Exception e) {
-            log.error("错误：" + e.getMessage());
+            log.error("错误：{}", e.getMessage());
         }
         return list;
     }
@@ -54,7 +55,7 @@ public class MinioUtils {
                     .build();
             minioClient.removeObject(removeObjectArgs);
         } catch (Exception e) {
-            log.error("错误：" + e.getMessage());
+            log.error("错误：{}", e.getMessage());
         }
     }
 
@@ -70,7 +71,7 @@ public class MinioUtils {
             minioClient.putObject(putObjectArgs);
             is.close();
         } catch (Exception e) {
-            log.error("错误：" + e.getMessage());
+            log.error("错误：{}", e.getMessage());
         }
     }
 
@@ -85,8 +86,7 @@ public class MinioUtils {
                     .build();
             return minioClient.getPresignedObjectUrl(getPresignedObjectUrlArgs);
         } catch (Exception e) {
-            e.printStackTrace();
-            log.error("错误：" + e.getMessage());
+            log.error("错误：{}", e.getMessage());
         }
         return "";
     }
@@ -101,7 +101,7 @@ public class MinioUtils {
                     .build();
             return minioClient.getObject(getObjectArgs);
         } catch (Exception e) {
-            log.error("错误：" + e.getMessage());
+            log.error("错误：{}", e.getMessage());
         }
         return null;
     }
