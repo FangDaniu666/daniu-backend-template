@@ -18,7 +18,7 @@
     <properties>
         <java.version>17</java.version>
     </properties>
-    <!--todo 删除非必要依赖-->
+    <!--todo 根据需求添加依赖，删除非必要依赖-->
     <dependencies>
         <!-- web依赖 -->
         <dependency>
@@ -139,7 +139,7 @@
             <version>3.3.4</version>
         </dependency>
 
-        <!--spring切面aop,实现日志操作功能-->
+        <!--spring切面aop-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-aop</artifactId>
@@ -161,10 +161,10 @@
         </dependency>
 
         <!-- Quartz -->
-        <!--<dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-quartz</artifactId>
-        </dependency>-->
+        </dependency>
 
         <!--JetBrains Annotations-->
         <!--<dependency>

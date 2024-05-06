@@ -44,3 +44,16 @@ knife4j:
   enable: true
   setting:
     language: zh_cn
+# jasypt加密配置
+# todo 使用需修改参数，否则则注释
+jasypt:
+  encryptor:
+    # 指定加密密钥，生产环境请放到启动参数里面，例如:java -jar demo.jar --jasypt.encryptor.password=password
+    password: 335199da-9d69-4b94-9c09-775b10527475
+    # 指定解密算法，需要和加密时使用的算法一致
+    algorithm: PBEWithMD5AndDES
+    iv-generator-classname: org.jasypt.iv.NoIvGenerator
+#    property:
+#      # 算法识别的前后缀，默认ENC()，包含在前后缀的加密信息，会使用指定算法解密
+#      prefix: ENC@[
+#      suffix: ]
