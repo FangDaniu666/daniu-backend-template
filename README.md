@@ -22,7 +22,8 @@
 
 1. git clone https://github.com/FangDaniu666/daniu-backend-template.git  
   或下载该仓库代码到本地。
-2. 搜索项目中标记的`todo`，根据实际需要，配置数据库连接、Redis、Minio 等信息。
+2. 搜索项目中标记的`todo`，根据实际需要，配置数据库连接、Redis、Minio 等信息，
+  表结构可参考 [user.sql](https://github.com/FangDaniu666/daniu-backend-template/src/main/resources/user.sql)。
 3. 运行项目，访问 http://localhost:8618/api/doc.html 查看 API 文档。
 
 
