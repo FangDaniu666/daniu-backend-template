@@ -8,6 +8,9 @@ import com.daniu.utils.NullAwareBeanUtils;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.*;
 import com.daniu.common.BaseResponse;
 import com.daniu.common.DeleteRequest;
@@ -58,6 +61,7 @@ public class UserController {
         if (StringUtils.isAnyBlank(userAccount, userPassword, checkPassword, userEmail)) {
             return null;
         }
+        userService.clearCache();
         long result = userService.userRegister(userAccount, userPassword, checkPassword, userEmail);
         return ResultUtils.success(result);
     }
@@ -88,6 +92,10 @@ public class UserController {
      */
     @PostMapping("/logout")
     public BaseResponse<Boolean> userLogout() {
+        if (!StpUtil.isLogin()) {
+            throw new BusinessException(ErrorCode.OPERATION_ERROR, "未登录");
+        }
+        userService.removeCacheByLoginId(StpUtil.getLoginId());
         boolean result = userService.userLogout();
         return ResultUtils.success(result);
     }
@@ -97,7 +105,12 @@ public class UserController {
      */
     @GetMapping("/get/login")
     public BaseResponse<LoginUserVO> getLoginUser() {
-        User user = userService.getLoginUser();
+        // 先判断是否已登录
+        if (!StpUtil.isLogin()) {
+            throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
+        }
+        // 从数据库查询
+        User user = userService.getLoginUser(StpUtil.getLoginId());
         return ResultUtils.success(userService.getLoginUserVO(user));
     }
 
@@ -115,6 +128,7 @@ public class UserController {
         if (userAddRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
+        userService.clearCache();
         User user = new User();
         NullAwareBeanUtils.copyPropertiesIgnoreEmpty(userAddRequest, user);
         boolean result = userService.save(user);
@@ -131,10 +145,14 @@ public class UserController {
     @PostMapping("/delete")
     @SaCheckRole(UserConstant.ADMIN_ROLE)
     public BaseResponse<Boolean> deleteUser(@RequestBody DeleteRequest deleteRequest) {
-        if (deleteRequest == null || deleteRequest.getId() <= 0) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
-        boolean b = userService.removeById(deleteRequest.getId());
+        if (deleteRequest == null) throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        userService.clearCache();
+        Long deleteId = deleteRequest.getId();
+        if (deleteId <= 0) throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
+        userService.removeCacheByLoginId(deleteId);     // 清除用户缓存
+        StpUtil.logout(deleteId);
+        StpUtil.kickout(deleteId);
+        boolean b = userService.removeById(deleteId);
         return ResultUtils.success(b);
     }
 
@@ -150,6 +168,8 @@ public class UserController {
         if (userUpdateRequest == null || userUpdateRequest.getId() == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
+        userService.clearCache();
+        userService.removeCacheByLoginId(userUpdateRequest.getId());
         User user = new User();
         NullAwareBeanUtils.copyPropertiesIgnoreEmpty(userUpdateRequest, user);
         boolean result = userService.updateById(user);
@@ -213,16 +233,10 @@ public class UserController {
         if (userQueryRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        long current = userQueryRequest.getCurrent();
-        long size = userQueryRequest.getPageSize();
-        // 限制爬虫
-        ThrowUtils.throwIf(size > 20, ErrorCode.PARAMS_ERROR);
-        Page<User> userPage = userService.page(new Page<>(current, size), userService.getQueryWrapper(userQueryRequest));
-        Page<UserVO> userVOPage = new Page<>(current, size, userPage.getTotal());
-        List<UserVO> userVO = userService.getUserVO(userPage.getRecords());
-        userVOPage.setRecords(userVO);
+        Page<UserVO> userVOPage = userService.getUserVOPage(userQueryRequest);
         return ResultUtils.success(userVOPage);
     }
+
 
     /**
      * 更新个人信息
@@ -235,8 +249,11 @@ public class UserController {
         if (userUpdateMyRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
+        Object loginId = StpUtil.getLoginId();
+        userService.clearCache();
+        userService.removeCacheByLoginId(loginId);
         User user = new User();
-        user.setId(Long.parseLong(StpUtil.getLoginId().toString()));
+        user.setId(Long.parseLong(loginId.toString()));
         NullAwareBeanUtils.copyPropertiesIgnoreEmpty(userUpdateMyRequest, user);
         boolean result = userService.updateById(user);
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
