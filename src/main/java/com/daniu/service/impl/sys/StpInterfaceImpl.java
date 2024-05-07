@@ -43,7 +43,7 @@ public class StpInterfaceImpl implements StpInterface {
     public List<String> getRoleList(Object loginId, String loginType) {
         List<String> list = new ArrayList<>();
         // todo 自行添加逻辑
-        User user = userService.getLoginUser();
+        User user = userService.getLoginUser(loginId);
         String userType = user.getUserType();
         if (userType != null) list.add(userType);
         return list;

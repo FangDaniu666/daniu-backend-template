@@ -4,11 +4,15 @@ import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.daniu.exception.ThrowUtils;
 import com.daniu.model.enums.UserRoleEnum;
 import com.daniu.utils.NullAwareBeanUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 import com.daniu.common.ErrorCode;
@@ -114,15 +118,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      * 获取当前登录用户
      */
     @Override
-    public User getLoginUser() {
-        // 先判断是否已登录
-        if (!StpUtil.isLogin()) {
-            throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
-        }
-
-        // 从数据库查询
+    @Cacheable(value = "loginUserCache", key = "#loginId")
+    public User getLoginUser(Object loginId) {
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("id", StpUtil.getLoginId());
+        queryWrapper.eq("id", loginId);
         User currentUser = this.baseMapper.selectOne(queryWrapper);
         if (currentUser == null) {
             throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
@@ -146,12 +145,23 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      */
     @Override
     public boolean userLogout() {
-        if (!StpUtil.isLogin()) {
-            throw new BusinessException(ErrorCode.OPERATION_ERROR, "未登录");
-        }
         // 移除登录态
         StpUtil.logout();
         return true;
+    }
+
+    @Override
+    @Cacheable(value = "userCache", key = "#userQueryRequest.current + '-' + #userQueryRequest.pageSize")
+    public Page<UserVO> getUserVOPage(UserQueryRequest userQueryRequest) {
+        long current = userQueryRequest.getCurrent();
+        long size = userQueryRequest.getPageSize();
+        // 限制爬虫
+        ThrowUtils.throwIf(size > 20, ErrorCode.PARAMS_ERROR);
+        Page<User> userPage = page(new Page<>(current, size), getQueryWrapper(userQueryRequest));
+        Page<UserVO> userVOPage = new Page<>(current, size, userPage.getTotal());
+        List<UserVO> userVO = getUserVO(userPage.getRecords());
+        userVOPage.setRecords(userVO);
+        return userVOPage;
     }
 
     @Override
@@ -199,6 +209,17 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         queryWrapper.orderBy(SqlUtils.validSortField(sortField), sortOrder.equals(CommonConstant.SORT_ORDER_ASC),
                 sortField);
         return queryWrapper;
+    }
+
+    @Override
+    @CacheEvict(value = "loginUserCache", key = "#loginId")
+    public void removeCacheByLoginId(Object loginId) {
+        ThrowUtils.throwIf(loginId == null, ErrorCode.OPERATION_ERROR);
+    }
+
+    @Override
+    @CacheEvict(value = "userCache", allEntries = true)
+    public void clearCache() {
     }
 
 }
