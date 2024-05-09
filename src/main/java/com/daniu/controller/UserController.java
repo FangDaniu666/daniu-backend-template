@@ -4,6 +4,7 @@ import cn.dev33.satoken.annotation.SaCheckRole;
 import cn.dev33.satoken.stp.StpUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.daniu.constant.UserConstant;
+import com.daniu.model.vo.UserWithEmailVO;
 import com.daniu.utils.NullAwareBeanUtils;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -258,6 +259,20 @@ public class UserController {
         boolean result = userService.updateById(user);
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
         return ResultUtils.success(true);
+    }
+
+    /**
+     * 邮箱脱敏
+     */
+    @GetMapping("/get/mail/vo")
+    public BaseResponse<UserWithEmailVO> getUserWithEmailById(long id) {
+        if (id <= 0) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        User user = userService.getById(id);
+        UserWithEmailVO userWithEmailVO = new UserWithEmailVO();
+        NullAwareBeanUtils.copyPropertiesIgnoreEmpty(user, userWithEmailVO);
+        return ResultUtils.success(userWithEmailVO);
     }
 
 }
