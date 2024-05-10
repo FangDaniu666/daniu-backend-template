@@ -7,7 +7,7 @@ import com.daniu.constant.UserConstant;
 import com.daniu.model.vo.UserWithEmailVO;
 import com.daniu.utils.NullAwareBeanUtils;
 import jakarta.annotation.Resource;
-import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Size;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -177,7 +177,7 @@ public class UserController {
      */
     @GetMapping("/get")
     @SaCheckRole(UserConstant.ADMIN_ROLE)
-    public BaseResponse<User> getUserById(@Validated @Min(value = 1, message = "无效id") long id) {
+    public BaseResponse<User> getUserById(@Validated @Size(min = 1, message = "无效id") long id) {
         User user = userService.getById(id);
         ThrowUtils.throwIf(user == null, ErrorCode.NOT_FOUND_ERROR);
         return ResultUtils.success(user);
@@ -190,7 +190,7 @@ public class UserController {
      * @return BaseResponse
      */
     @GetMapping("/get/vo")
-    public BaseResponse<UserVO> getUserVOById(@Validated @Min(value = 1, message = "无效id") long id) {
+    public BaseResponse<UserVO> getUserVOById(@Validated @Size(min = 1, message = "无效id") long id) {
         BaseResponse<User> response = getUserById(id);
         User user = response.getData();
         return ResultUtils.success(userService.getUserVO(user));

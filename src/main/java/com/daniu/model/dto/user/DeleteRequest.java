@@ -1,6 +1,7 @@
 package com.daniu.model.dto.user;
 
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -17,7 +18,7 @@ public class DeleteRequest implements Serializable {
     /**
      * id
      */
-    @Min(value = 1, message = "无效id")
+    @Size(min = 1, message = "无效id")
     private Long id;
 
     private static final long serialVersionUID = 1L;

@@ -2,6 +2,7 @@ package com.daniu.model.dto.user;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import com.daniu.common.PageRequest;
@@ -20,7 +21,7 @@ public class UserQueryRequest extends PageRequest implements Serializable {
     /**
      * id
      */
-    @Min(value = 1, message = "无效id")
+    @Size(min = 1, message = "无效id")
     private Long id;
 
     /**
