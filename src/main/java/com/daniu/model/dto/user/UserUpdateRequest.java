@@ -1,5 +1,7 @@
 package com.daniu.model.dto.user;
 
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -15,6 +17,7 @@ public class UserUpdateRequest implements Serializable {
     /**
      * id
      */
+    @Min(value = 1, message = "无效id")
     private Long id;
 
     /**

@@ -1,5 +1,8 @@
 package com.daniu.model.dto.user;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -31,6 +34,7 @@ public class UserUpdateMyRequest implements Serializable {
     /**
      * 用户邮箱
      */
+    @Email(message = "邮箱格式不正确")
     private String userEmail;
 
     /**
@@ -41,6 +45,8 @@ public class UserUpdateMyRequest implements Serializable {
     /**
      * 用户密码
      */
+    @NotBlank(message = "密码不能为空")
+    @Size(min = 8, message = "用户密码长度不能少于8位")
     private String userPassword;
 
 

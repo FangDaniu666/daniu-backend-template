@@ -3,6 +3,8 @@ package com.daniu.exception;
 import cn.dev33.satoken.exception.NotLoginException;
 import cn.dev33.satoken.util.SaResult;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import com.daniu.common.ErrorCode;
@@ -18,6 +20,17 @@ import com.daniu.common.ErrorCode;
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
+
+    /**
+     * 捕捉参数校验异常
+     * @param e
+     * @return
+     */
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public SaResult handleValidationException(MethodArgumentNotValidException e) {
+        String errorMessage = e.getBindingResult().getFieldError().getDefaultMessage();
+        return SaResult.error(errorMessage).setCode(ErrorCode.PARAMS_ERROR.getCode());
+    }
 
     /**
      * 捕捉系统业务异常

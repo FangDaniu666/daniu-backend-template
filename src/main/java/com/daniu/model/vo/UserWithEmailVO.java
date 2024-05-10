@@ -3,7 +3,6 @@ package com.daniu.model.vo;
 import com.daniu.utils.desensitization.Desensitization;
 import com.daniu.utils.desensitization.DesensitizationTypeEnum;
 import lombok.Data;
-
 import java.io.Serializable;
 import java.util.Date;
 
