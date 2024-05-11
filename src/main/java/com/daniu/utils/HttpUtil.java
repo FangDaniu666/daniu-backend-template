@@ -6,14 +6,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.lionsoul.ip2region.xdb.Searcher;
 import org.springframework.util.ResourceUtils;
-import java.io.BufferedReader;
+
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.util.concurrent.TimeUnit;
 
 /**
  * http 工具类
@@ -58,52 +52,9 @@ public class HttpUtil {
     }
 
     /**
-     * 获取ip地址
-     *
-     * @return {@link String}
-     */
-    public static String getIp() {
-        String ip = null;
-        String test = "http://checkip.amazonaws.com/";
-        StringBuilder inputLine = new StringBuilder();
-        BufferedReader in = null;
-
-        try {
-            URL url = new URL(test);
-            HttpURLConnection urlConnection = (HttpURLConnection)url.openConnection();
-            in = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(), StandardCharsets.UTF_8));
-
-            String read;
-            while((read = in.readLine()) != null) {
-                inputLine.append(read);
-            }
-
-            ip = inputLine.toString();
-        } catch (Exception var16) {
-            log.error("获取网络IP地址异常，这是具体原因: ", var16);
-        } finally {
-            if (in != null) {
-                try {
-                    in.close();
-                } catch (IOException var15) {
-                    var15.printStackTrace();
-                }
-            }
-
-        }
-
-        if (ip == null) {
-            ip = "127.0.0.1";
-            log.info("获取网络IP地址异常, 赋值默认ip: 【{}】", ip);
-        }
-
-        return ip;
-    }
-
-    /**
      * 获取格式化ip地址
      */
-    public static String getIpAddress() {
+    public static String getRegion(String ip) {
         String region = "";
         try {
             // 1、创建 searcher 对象
@@ -111,12 +62,9 @@ public class HttpUtil {
             String dbPath = file.getPath();
             Searcher searcher = Searcher.newWithFileOnly(dbPath);
             // 2、查询
-            long sTime = System.nanoTime();
-            region = searcher.search(getIp());
-            long cost = TimeUnit.NANOSECONDS.toMicros(System.nanoTime() - sTime);
-            System.out.printf("{region: %s, ioCount: %d, took: %d μs}\n", region, searcher.getIOCount(), cost);
+            region = searcher.search(ip);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("获取ip地址信息失败");
         }
 
         return region;
@@ -127,15 +75,15 @@ public class HttpUtil {
      *
      * @return 省份
      */
-    public static String getProvince() {
+    public static String getProvince(String ip) {
         String province = null;
         try {
-            String str = getIpAddress();
+            String str = getRegion(ip);
             String a = str.substring(0, str.lastIndexOf("|"));
             String b = a.substring(0, a.lastIndexOf("|"));
             province = b.substring(b.lastIndexOf("|") + 1);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("获取省份信息失败");
         }
         return province;
     }
@@ -146,21 +94,18 @@ public class HttpUtil {
      *
      * @return 城市
      */
-    public static String getCity() {
+    public static String getCity(String ip) {
         String city = null;
         try {
-            String str = getIpAddress();
+            String str = getRegion(ip);
             String a = str.substring(0, str.lastIndexOf("|"));
             city = a.substring(a.lastIndexOf("|") + 1);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("获取城市信息失败");
         }
 
         return city;
     }
 
-    /*public static void main(String[] args) {
-        System.out.println(getIpAddress());
-    }*/
 
 }

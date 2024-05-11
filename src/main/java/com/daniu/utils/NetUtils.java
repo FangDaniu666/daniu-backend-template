@@ -1,6 +1,8 @@
 package com.daniu.utils;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
+
 import java.net.InetAddress;
 
 /**
@@ -9,6 +11,7 @@ import java.net.InetAddress;
  * @author FangDaniu
  * @from daniu-backend-template
  */
+@Slf4j
 public class NetUtils {
 
     /**
@@ -19,21 +22,22 @@ public class NetUtils {
      */
     public static String getIpAddress(HttpServletRequest request) {
         String ip = request.getHeader("x-forwarded-for");
-        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
             ip = request.getHeader("Proxy-Client-IP");
         }
-        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
             ip = request.getHeader("WL-Proxy-Client-IP");
         }
-        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
             ip = request.getRemoteAddr();
+            if (ip.equals("0:0:0:0:0:0:0:1")) ip = "127.0.0.1";
             if (ip.equals("127.0.0.1")) {
                 // 根据网卡取本机配置的 IP
                 InetAddress inet = null;
                 try {
                     inet = InetAddress.getLocalHost();
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    log.error("获取客户端IP地址失败");
                 }
                 if (inet != null) {
                     ip = inet.getHostAddress();

@@ -6,8 +6,11 @@ import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.daniu.constant.UserConstant;
 import com.daniu.model.vo.UserWithEmailVO;
+import com.daniu.utils.HttpUtil;
+import com.daniu.utils.NetUtils;
 import com.daniu.utils.NullAwareBeanUtils;
 import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.Min;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
@@ -67,10 +70,13 @@ public class UserController {
      * @return BaseResponse
      */
     @PostMapping("/login")
-    public BaseResponse<LoginUserVO> userLogin(@Validated @RequestBody UserLoginRequest userLoginRequest) {
-        if (userLoginRequest == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
+    public BaseResponse<LoginUserVO> userLogin(@Validated @RequestBody UserLoginRequest userLoginRequest, HttpServletRequest request) {
+        if (userLoginRequest == null) throw new BusinessException(ErrorCode.PARAMS_ERROR);
+
+        String ip = NetUtils.getIpAddress(request);
+        String region = HttpUtil.getRegion(ip);
+        log.info(region);
+
         String userAccount = userLoginRequest.getUserAccount();
         String userPassword = userLoginRequest.getUserPassword();
         LoginUserVO loginUserVO = userService.userLogin(userAccount, userPassword);
