@@ -178,6 +178,13 @@
             <artifactId>spring-boot-starter-quartz</artifactId>
         </dependency>
 
+        <!-- ip2region  -->
+        <dependency>
+            <groupId>org.lionsoul</groupId>
+            <artifactId>ip2region</artifactId>
+            <version>2.7.0</version>
+        </dependency>
+
         <!--JetBrains Annotations-->
         <!--<dependency>
             <groupId>org.jetbrains</groupId>
