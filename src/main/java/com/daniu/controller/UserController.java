@@ -2,12 +2,13 @@ package com.daniu.controller;
 
 import cn.dev33.satoken.annotation.SaCheckRole;
 import cn.dev33.satoken.stp.StpUtil;
+import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.daniu.constant.UserConstant;
 import com.daniu.model.vo.UserWithEmailVO;
 import com.daniu.utils.NullAwareBeanUtils;
 import jakarta.annotation.Resource;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.Min;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -48,16 +49,13 @@ public class UserController {
     @PostMapping("/register")
     public BaseResponse<Long> userRegister(@Validated @RequestBody UserRegisterRequest userRegisterRequest) {
         log.info("userRegister");
-        if (userRegisterRequest == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
-        String userAccount = userRegisterRequest.getUserAccount();
-        String userPassword = userRegisterRequest.getUserPassword();
-        String checkPassword = userRegisterRequest.getCheckPassword();
-        String userEmail = userRegisterRequest.getUserEmail();
+        if (userRegisterRequest == null) throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        User user = new User();
+        user.setUserEmail(userRegisterRequest.getUserEmail());
+        user.setCreateTime(DateUtil.date());
 
-        userService.clearCache();
-        long result = userService.userRegister(userAccount, userPassword, checkPassword, userEmail);
+        long result = userService.userRegister(userRegisterRequest.getUserAccount(),
+                userRegisterRequest.getCheckPassword(), user);
         return ResultUtils.success(result);
     }
 
@@ -117,13 +115,10 @@ public class UserController {
     @PostMapping("/add")
     @SaCheckRole(UserConstant.ADMIN_ROLE)
     public BaseResponse<Long> addUser(@Validated @RequestBody UserAddRequest userAddRequest) {
-        if (userAddRequest == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
-        userService.clearCache();
+        if (userAddRequest == null) throw new BusinessException(ErrorCode.PARAMS_ERROR);
         User user = new User();
         NullAwareBeanUtils.copyPropertiesIgnoreEmpty(userAddRequest, user);
-        boolean result = userService.save(user);
+        boolean result = userService.saveUser(user);
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
         return ResultUtils.success(user.getId());
     }
@@ -138,13 +133,7 @@ public class UserController {
     @SaCheckRole(UserConstant.ADMIN_ROLE)
     public BaseResponse<Boolean> deleteUser(@Validated @RequestBody DeleteRequest deleteRequest) {
         if (deleteRequest == null) throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        userService.clearCache();
-        Long deleteId = deleteRequest.getId();
-        if (deleteId <= 0) throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
-        userService.removeCacheByLoginId(deleteId);     // 清除用户缓存
-        StpUtil.logout(deleteId);
-        StpUtil.kickout(deleteId);
-        boolean b = userService.removeById(deleteId);
+        boolean b = userService.deleteUserById(deleteRequest.getId());
         return ResultUtils.success(b);
     }
 
@@ -156,17 +145,35 @@ public class UserController {
      */
     @PostMapping("/update")
     @SaCheckRole(UserConstant.ADMIN_ROLE)
-    public BaseResponse<Boolean> updateUser(@Validated @RequestBody UserUpdateRequest userUpdateRequest) {
-        if (userUpdateRequest == null || userUpdateRequest.getId() == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
-        userService.clearCache();
-        userService.removeCacheByLoginId(userUpdateRequest.getId());
+    public BaseResponse<Long> updateUser(@Validated @RequestBody UserUpdateRequest userUpdateRequest) {
+        if (userUpdateRequest == null) throw new BusinessException(ErrorCode.PARAMS_ERROR);
         User user = new User();
         NullAwareBeanUtils.copyPropertiesIgnoreEmpty(userUpdateRequest, user);
-        boolean result = userService.updateById(user);
+        boolean result = userService.updateUser(user);
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
-        return ResultUtils.success(true);
+        return ResultUtils.success(user.getId());
+    }
+
+    /**
+     * 更新个人信息
+     *
+     * @param userUpdateMyRequest
+     * @return BaseResponse
+     */
+    @PostMapping("/update/my")
+    public BaseResponse<Long> updateMyUser(@Validated @RequestBody UserUpdateMyRequest userUpdateMyRequest) {
+        if (userUpdateMyRequest == null) throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        // 先判断是否已登录
+        if (!StpUtil.isLogin()) {
+            throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
+        }
+        Object loginId = StpUtil.getLoginId();
+        User user = new User();
+        user.setId(Long.parseLong(loginId.toString()));
+        NullAwareBeanUtils.copyPropertiesIgnoreEmpty(userUpdateMyRequest, user);
+        boolean result = userService.updateMyUser(loginId, user);
+        ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
+        return ResultUtils.success(user.getId());
     }
 
     /**
@@ -177,7 +184,7 @@ public class UserController {
      */
     @GetMapping("/get")
     @SaCheckRole(UserConstant.ADMIN_ROLE)
-    public BaseResponse<User> getUserById(@Validated @Size(min = 1, message = "无效id") long id) {
+    public BaseResponse<User> getUserById(@Validated @Min(value = 1, message = "无效id") long id) {
         User user = userService.getById(id);
         ThrowUtils.throwIf(user == null, ErrorCode.NOT_FOUND_ERROR);
         return ResultUtils.success(user);
@@ -190,7 +197,7 @@ public class UserController {
      * @return BaseResponse
      */
     @GetMapping("/get/vo")
-    public BaseResponse<UserVO> getUserVOById(@Validated @Size(min = 1, message = "无效id") long id) {
+    public BaseResponse<UserVO> getUserVOById(@Validated @Min(value = 1, message = "无效id") long id) {
         BaseResponse<User> response = getUserById(id);
         User user = response.getData();
         return ResultUtils.success(userService.getUserVO(user));
@@ -228,38 +235,13 @@ public class UserController {
 
 
     /**
-     * 更新个人信息
-     *
-     * @param userUpdateMyRequest
-     * @return BaseResponse
-     */
-    @PostMapping("/update/my")
-    public BaseResponse<Boolean> updateMyUser(@Validated @RequestBody UserUpdateMyRequest userUpdateMyRequest) {
-        if (userUpdateMyRequest == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
-        Object loginId = StpUtil.getLoginId();
-        userService.clearCache();
-        userService.removeCacheByLoginId(loginId);
-        User user = new User();
-        user.setId(Long.parseLong(loginId.toString()));
-        NullAwareBeanUtils.copyPropertiesIgnoreEmpty(userUpdateMyRequest, user);
-        boolean result = userService.updateById(user);
-        ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
-        return ResultUtils.success(true);
-    }
-
-    /**
-     * 邮箱脱敏
+     * 邮箱字段脱敏
      *
      * @param id
      * @return BaseResponse
      */
     @GetMapping("/get/mail/vo")
-    public BaseResponse<UserWithEmailVO> getUserWithEmailById(long id) {
-        if (id <= 0) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
+    public BaseResponse<UserWithEmailVO> getUserWithEmailById(@Validated @Min(value = 1, message = "无效id") long id) {
         User user = userService.getById(id);
         UserWithEmailVO userWithEmailVO = new UserWithEmailVO();
         NullAwareBeanUtils.copyPropertiesIgnoreEmpty(user, userWithEmailVO);

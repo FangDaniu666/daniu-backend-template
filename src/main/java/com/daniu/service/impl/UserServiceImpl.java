@@ -1,7 +1,6 @@
 package com.daniu.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
-import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -14,6 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
 import com.daniu.common.ErrorCode;
 import com.daniu.constant.CommonConstant;
@@ -45,37 +45,42 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      */
     private static final String SALT = "80bcac91-6c73-46e2-86c4-47ed0eb10496";
 
+    /**
+     * 用户注册
+     * @param userAccount   用户账户
+     * @param checkPassword 校验密码
+     * @param user
+     */
     @Override
-    public long userRegister(String userAccount, String userPassword, String checkPassword, String userEmail) {
+    @Transactional
+    @CacheEvict(value = "userCache", allEntries = true)
+    public long userRegister(String userAccount, String checkPassword, User user) {
         // 1. 校验
         // 密码和校验密码相同
-        if (!userPassword.equals(checkPassword)) {
+        if (!user.getUserPassword().equals(checkPassword))
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "两次输入的密码不一致");
-        }
         synchronized (userAccount.intern()) {
             // 账户不能重复
             QueryWrapper<User> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("userAccount", userAccount);
             long count = this.baseMapper.selectCount(queryWrapper);
-            if (count > 0) {
-                throw new BusinessException(ErrorCode.PARAMS_ERROR, "账号重复");
-            }
+            if (count > 0) throw new BusinessException(ErrorCode.PARAMS_ERROR, "账号重复");
             // 2. 加密
-            String encryptPassword = DigestUtils.md5DigestAsHex((SALT + userPassword).getBytes());
+            String encryptPassword = DigestUtils.md5DigestAsHex((SALT + user.getUserPassword()).getBytes());
             // 3. 插入数据
-            User user = new User();
-            user.setUserAccount(userAccount);
             user.setUserPassword(encryptPassword);
-            user.setUserEmail(userEmail);
-            user.setCreateTime(DateUtil.date());
+            user.setUserAccount(userAccount);
             boolean saveResult = this.save(user);
-            if (!saveResult) {
-                throw new BusinessException(ErrorCode.SYSTEM_ERROR, "注册失败，数据库错误");
-            }
+            if (!saveResult) throw new BusinessException(ErrorCode.SYSTEM_ERROR, "注册失败，数据库错误");
             return user.getId();
         }
     }
 
+    /**
+     * 用户登录
+     * @param userAccount  用户账户
+     * @param userPassword 用户密码
+     */
     @Override
     public LoginUserVO userLogin(String userAccount, String userPassword) {
         // 1. 加密
@@ -104,9 +109,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("id", loginId);
         User currentUser = this.baseMapper.selectOne(queryWrapper);
-        if (currentUser == null) {
-            throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
-        }
+        if (currentUser == null) throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
         return currentUser;
     }
 
@@ -129,6 +132,66 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         // 移除登录态
         StpUtil.logout();
         return true;
+    }
+
+    // 增删改查
+
+    /**
+     * 新增用户
+     *
+     * @param user
+     * @return
+     */
+    @Override
+    @Transactional
+    @CacheEvict(value = "userCache", allEntries = true)
+    public boolean saveUser(User user) {
+        return save(user);
+    }
+
+    /**
+     * 删除用户
+     *
+     * @param deleteId
+     * @return
+     */
+    @Override
+    @Transactional
+    @CacheEvict(value = "userCache", allEntries = true)
+    public boolean deleteUserById(Long deleteId) {
+        removeCacheByLoginId(deleteId);     // 清除用户缓存
+        StpUtil.logout(deleteId);
+        StpUtil.kickout(deleteId);
+        return removeById(deleteId);
+    }
+
+    /**
+     * 更新用户
+     *
+     * @param user
+     * @return
+     */
+    @Override
+    @Transactional
+    @CacheEvict(value = "userCache", allEntries = true)
+    public boolean updateUser(User user) {
+        removeCacheByLoginId(user.getId());
+        return updateById(user);
+    }
+
+    /**
+     * 更新当前登录用户信息
+     *
+     * @param loginId
+     * @param user
+     * @return
+     */
+    @Override
+    @Transactional
+    @CacheEvict(value = "userCache", allEntries = true)
+    public boolean updateMyUser(Object loginId, User user) {
+        removeCacheByLoginId(loginId);
+        return updateById(user);
     }
 
     @Override
@@ -192,15 +255,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         return queryWrapper;
     }
 
+    // 缓存清理
     @Override
     @CacheEvict(value = "loginUserCache", key = "#loginId")
     public void removeCacheByLoginId(Object loginId) {
         ThrowUtils.throwIf(loginId == null, ErrorCode.OPERATION_ERROR);
-    }
-
-    @Override
-    @CacheEvict(value = "userCache", allEntries = true)
-    public void clearCache() {
     }
 
 }
