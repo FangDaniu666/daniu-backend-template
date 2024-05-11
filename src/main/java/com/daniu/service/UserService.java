@@ -3,11 +3,13 @@ package com.daniu.service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.daniu.model.dto.user.UserAddRequest;
 import com.daniu.model.dto.user.UserQueryRequest;
 import com.daniu.model.entity.User;
 import com.daniu.model.vo.LoginUserVO;
 import com.daniu.model.vo.UserVO;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -23,11 +25,10 @@ public interface UserService extends IService<User> {
      * 用户注册
      *
      * @param userAccount   用户账户
-     * @param userPassword  用户密码
      * @param checkPassword 校验密码
      * @return 新用户 id
      */
-    long userRegister(String userAccount, String userPassword, String checkPassword, String userEmail);
+    long userRegister(String userAccount, String checkPassword, User user);
 
     /**
      * 用户登录
@@ -58,6 +59,44 @@ public interface UserService extends IService<User> {
      */
     boolean userLogout();
 
+    /**
+     * 新增用户
+     *
+     * @param user
+     * @return
+     */
+    boolean saveUser(User user);
+
+    /**
+     * 删除用户
+     *
+     * @param deleteId
+     * @return
+     */
+    boolean deleteUserById(Long deleteId);
+
+    /**
+     * 更新用户
+     *
+     * @param user
+     * @return
+     */
+    boolean updateUser(User user);
+
+    /**
+     * 更新当前登录用户信息
+     *
+     * @param loginId
+     * @param user
+     * @return
+     */
+    boolean updateMyUser(Object loginId, User user);
+
+    /**
+     * 分页获取脱敏的用户信息
+     * @param userQueryRequest
+     * @return
+     */
     Page<UserVO> getUserVOPage(UserQueryRequest userQueryRequest);
 
     /**
@@ -93,9 +132,8 @@ public interface UserService extends IService<User> {
 
     /**
      * 删除已登录用户缓存
+     *
      * @param loginId
      */
     void removeCacheByLoginId(Object loginId);
-
-    void clearCache();
 }
