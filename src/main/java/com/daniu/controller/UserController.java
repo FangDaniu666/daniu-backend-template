@@ -90,7 +90,8 @@ public class UserController {
     @PostMapping("/logout")
     public BaseResponse<Boolean> userLogout() {
         if (!StpUtil.isLogin()) throw new BusinessException(ErrorCode.OPERATION_ERROR, "未登录");
-        boolean result = userService.userLogout();
+        Object loginId = StpUtil.getLoginId();
+        boolean result = userService.userLogout(loginId);
         return ResultUtils.success(result);
     }
 

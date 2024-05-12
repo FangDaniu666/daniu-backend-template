@@ -57,7 +57,7 @@ public interface UserService extends IService<User> {
     /**
      * 用户注销
      */
-    boolean userLogout();
+    boolean userLogout(Object loginId);
 
     /**
      * 新增用户
@@ -130,10 +130,4 @@ public interface UserService extends IService<User> {
      */
     QueryWrapper<User> getQueryWrapper(UserQueryRequest userQueryRequest);
 
-    /**
-     * 删除已登录用户缓存
-     *
-     * @param loginId
-     */
-    void removeCacheByLoginId(Object loginId);
 }

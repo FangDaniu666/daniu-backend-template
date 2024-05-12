@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
@@ -25,7 +26,6 @@ import com.daniu.model.vo.LoginUserVO;
 import com.daniu.model.vo.UserVO;
 import com.daniu.service.UserService;
 import com.daniu.utils.SqlUtils;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -130,8 +130,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      * 用户注销
      */
     @Override
-    public boolean userLogout() {
-        removeCacheByLoginId(StpUtil.getLoginId());
+    @CacheEvict(value = "loginUserCache", key = "#loginId")
+    public boolean userLogout(Object loginId) {
         // 移除登录态
         StpUtil.logout();
         return true;
@@ -160,9 +160,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      */
     @Override
     @Transactional
-    @CacheEvict(value = "userCache", allEntries = true)
+    @Caching(evict = {
+            @CacheEvict(value = "userCache", allEntries = true),
+            @CacheEvict(value = "loginUserCache", key = "#deleteId")
+    })
     public boolean deleteUserById(Long deleteId) {
-        removeCacheByLoginId(deleteId);     // 清除用户缓存
         StpUtil.logout(deleteId);
         StpUtil.kickout(deleteId);
         return removeById(deleteId);
@@ -176,9 +178,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      */
     @Override
     @Transactional
-    @CacheEvict(value = "userCache", allEntries = true)
+    @Caching(evict = {
+            @CacheEvict(value = "userCache", allEntries = true),
+            @CacheEvict(value = "loginUserCache", key = "#user.getId()")
+    })
     public boolean updateUser(User user) {
-        removeCacheByLoginId(user.getId());
         return updateById(user);
     }
 
@@ -191,9 +195,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      */
     @Override
     @Transactional
-    @CacheEvict(value = "userCache", allEntries = true)
+    @Caching(evict = {
+            @CacheEvict(value = "userCache", allEntries = true),
+            @CacheEvict(value = "loginUserCache", key = "#loginId")
+    })
     public boolean updateMyUser(Object loginId, User user) {
-        removeCacheByLoginId(loginId);
         return updateById(user);
     }
 
@@ -256,13 +262,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         queryWrapper.orderBy(SqlUtils.validSortField(sortField), sortOrder.equals(CommonConstant.SORT_ORDER_ASC),
                 sortField);
         return queryWrapper;
-    }
-
-    // 缓存清理
-    @Override
-    @CacheEvict(value = "loginUserCache", key = "#loginId")
-    public void removeCacheByLoginId(Object loginId) {
-        ThrowUtils.throwIf(loginId == null, ErrorCode.OPERATION_ERROR);
     }
 
 }
