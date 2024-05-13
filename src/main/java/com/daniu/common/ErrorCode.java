@@ -4,7 +4,7 @@ package com.daniu.common;
  * 自定义错误码
  *
  * @author FangDaniu
- * @from daniu-backend-template
+ * @since  2024/05/4
  */
 public enum ErrorCode {
 

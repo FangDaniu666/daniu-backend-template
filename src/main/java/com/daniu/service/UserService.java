@@ -3,13 +3,11 @@ package com.daniu.service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.daniu.model.dto.user.UserAddRequest;
 import com.daniu.model.dto.user.UserQueryRequest;
 import com.daniu.model.entity.User;
 import com.daniu.model.vo.LoginUserVO;
 import com.daniu.model.vo.UserVO;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.transaction.annotation.Transactional;
+import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.List;
 
@@ -17,7 +15,7 @@ import java.util.List;
  * 用户服务
  *
  * @author FangDaniu
- * @from daniu-backend-template
+ * @since  2024/05/4
  */
 public interface UserService extends IService<User> {
 
@@ -37,7 +35,7 @@ public interface UserService extends IService<User> {
      * @param userPassword 用户密码
      * @return 脱敏后的用户信息
      */
-    LoginUserVO userLogin(String userAccount, String userPassword);
+    LoginUserVO userLogin(String userAccount, String userPassword, HttpServletRequest request);
 
     /**
      * 获取当前登录用户
@@ -94,6 +92,7 @@ public interface UserService extends IService<User> {
 
     /**
      * 分页获取脱敏的用户信息
+     *
      * @param userQueryRequest
      * @return
      */

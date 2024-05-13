@@ -4,7 +4,7 @@ package com.daniu.constant;
  * 用户常量
  *
  * @author FangDaniu
- * @from daniu-backend-template
+ * @since  2024/05/4
  */
 public interface UserConstant {
 

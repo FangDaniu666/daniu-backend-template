@@ -2,7 +2,6 @@ package com.daniu.model.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
-
 import java.io.Serializable;
 import java.util.Date;
 
@@ -10,7 +9,7 @@ import java.util.Date;
  * 用户
  *
  * @author FangDaniu
- * @from daniu-backend-template
+ * @since  2024/05/4
  */
 @TableName(value = "user")
 @Data

@@ -15,7 +15,7 @@ import java.nio.charset.StandardCharsets;
  * 网络工具类
  *
  * @author FangDaniu
- * @from daniu-backend-template
+ * @since  2024/05/11
  */
 @Slf4j
 public class NetUtils {

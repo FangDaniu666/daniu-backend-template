@@ -15,8 +15,9 @@ import java.io.IOException;
 import java.util.Objects;
 
 /**
+ * 自定义字段脱敏序列化器
  * @author FangDaniu
- * @from daniu-backend-template
+ * @since  2024/05/9
  */
 @NoArgsConstructor
 @AllArgsConstructor

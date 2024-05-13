@@ -9,7 +9,7 @@ import java.util.Date;
  * 已登录用户视图（脱敏）
  *
  * @author FangDaniu
- * @from daniu-backend-template
+ * @since  2024/05/4
  **/
 @Data
 public class LoginUserVO implements Serializable {

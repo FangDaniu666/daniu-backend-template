@@ -6,7 +6,7 @@ import com.daniu.common.ErrorCode;
  * 自定义异常类
  *
  * @author FangDaniu
- * @from daniu-backend-template
+ * @since  2024/05/4
  */
 public class BusinessException extends RuntimeException {
 

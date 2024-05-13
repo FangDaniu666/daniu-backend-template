@@ -7,7 +7,7 @@ import com.daniu.constant.CommonConstant;
  * 分页请求
  *
  * @author FangDaniu
- * @from daniu-backend-template
+ * @since  2024/05/4
  */
 @Data
 public class PageRequest {

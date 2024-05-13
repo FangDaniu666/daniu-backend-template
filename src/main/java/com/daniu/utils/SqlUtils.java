@@ -6,7 +6,7 @@ import org.apache.commons.lang3.StringUtils;
  * SQL 工具
  *
  * @author FangDaniu
- * @from daniu-backend-template
+ * @since  2024/05/4
  */
 public class SqlUtils {
 

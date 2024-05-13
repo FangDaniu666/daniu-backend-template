@@ -6,8 +6,14 @@ import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.daniu.exception.ThrowUtils;
+import com.daniu.model.entity.LoginLog;
 import com.daniu.model.enums.UserRoleEnum;
+import com.daniu.service.LoginLogService;
+import com.daniu.utils.HttpUtil;
+import com.daniu.utils.NetUtils;
 import com.daniu.utils.NullAwareBeanUtils;
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.CacheEvict;
@@ -26,7 +32,9 @@ import com.daniu.model.vo.LoginUserVO;
 import com.daniu.model.vo.UserVO;
 import com.daniu.service.UserService;
 import com.daniu.utils.SqlUtils;
+
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,11 +42,14 @@ import java.util.stream.Collectors;
  * 用户服务实现
  *
  * @author FangDaniu
- * @from daniu-backend-template
+ * @since  2024/05/4
  */
 @Service
 @Slf4j
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
+
+    @Resource
+    private LoginLogService loginLogService;
 
     /**
      * 盐值，混淆密码
@@ -84,21 +95,40 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      * @param userPassword 用户密码
      */
     @Override
-    public LoginUserVO userLogin(String userAccount, String userPassword) {
-        // 1. 加密
+    public LoginUserVO userLogin(String userAccount, String userPassword, HttpServletRequest request) {
+        // 加密
         String encryptPassword = DigestUtils.md5DigestAsHex((SALT + userPassword).getBytes());
         // 查询用户是否存在
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("userAccount", userAccount);
         queryWrapper.eq("userPassword", encryptPassword);
         User user = this.baseMapper.selectOne(queryWrapper);
-        // 用户不存在
+
+        // 登录日志
+        String ip = NetUtils.getIpAddress(request);
+        String region = HttpUtil.getRegion(ip);
+        log.info(region);
+
+        LoginLog loginLog = new LoginLog();
+        loginLog.setUserName(userAccount);
+        loginLog.setLoginTime(new Date());
+        loginLog.setLoginIp(ip);
+        loginLog.setLoginAddr(HttpUtil.getProvince(ip) + " " + HttpUtil.getCity(ip));
+        loginLog.setDriverName(HttpUtil.getBrowserName(request) + " " + HttpUtil.getBrowserVersion(request));
+        loginLog.setOsName(HttpUtil.getOsName(request));
+        loginLog.setLoginState(1);
+
+        // 判断用户是否为空
         if (user == null) {
             log.info("user login failed, userAccount cannot match userPassword");
+            loginLog.setLoginState(0);
+            loginLogService.save(loginLog);
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户不存在或密码错误");
         }
-        // 2. 记录用户的登录态
+
+        // 记录用户的登录态
         StpUtil.login(user.getId());
+        loginLogService.save(loginLog);
         return this.getLoginUserVO(user);
     }
 
@@ -247,9 +277,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public QueryWrapper<User> getQueryWrapper(UserQueryRequest userQueryRequest) {
-        if (userQueryRequest == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "请求参数为空");
-        }
+        if (userQueryRequest == null) throw new BusinessException(ErrorCode.PARAMS_ERROR, "请求参数为空");
         Long id = userQueryRequest.getId();
         String userName = userQueryRequest.getUserName();
         String userProfile = userQueryRequest.getUserProfile();

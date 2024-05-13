@@ -8,8 +8,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * 字段脱敏注解
  * @author FangDaniu
- * @from daniu-backend-template
+ * @since  2024/05/9
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)

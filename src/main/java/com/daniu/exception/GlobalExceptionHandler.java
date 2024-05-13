@@ -11,11 +11,10 @@ import com.daniu.common.ErrorCode;
 
 /**
  * 全局异常处理器
+ * 用Sa-Token的通用返回类Sa-Token接管异常处理返回值
  *
  * @author FangDaniu
- * @from daniu-backend-template
- * @date 2023/11/15
- * @description 用Sa-Token的通用返回类Sa-Token接管异常处理返回值
+ * @since  2024/05/4
  */
 @RestControllerAdvice
 @Slf4j

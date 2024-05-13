@@ -39,12 +39,12 @@ mybatis-plus:
   type-aliases-package: com.daniu.model.entity
   configuration:
     #数据库大写下划线转换
-    map-underscore-to-camel-case: false
+    map-underscore-to-camel-case: true
     #开启sql日志
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   global-config:
     db-config:
-      logic-delete-field: isDelete # 全局逻辑删除的实体字段名
+      logic-delete-field: is_delete # 全局逻辑删除的实体字段名
       logic-delete-value: 1 # 逻辑已删除值（默认为 1）
       logic-not-delete-value: 0 # 逻辑未删除值（默认为 0）
     # 启动时logo显示开关

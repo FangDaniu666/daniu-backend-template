@@ -5,24 +5,25 @@
 <mapper namespace="com.daniu.mapper.UserMapper">
 
     <resultMap id="BaseResultMap" type="com.daniu.model.entity.User">
-            <id property="id" column="id" jdbcType="BIGINT"/>
-            <result property="userAccount" column="userAccount" jdbcType="VARCHAR"/>
-            <result property="userPassword" column="userPassword" jdbcType="VARCHAR"/>
-            <result property="userSalt" column="userSalt" jdbcType="VARCHAR"/>
-            <result property="userEmail" column="userEmail" jdbcType="VARCHAR"/>
-            <result property="userName" column="userName" jdbcType="VARCHAR"/>
-            <result property="userAvatar" column="userAvatar" jdbcType="VARCHAR"/>
-            <result property="userProfile" column="userProfile" jdbcType="VARCHAR"/>
-            <result property="userType" column="userType" jdbcType="VARCHAR"/>
-            <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
-            <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
-            <result property="isDelete" column="isDelete" jdbcType="TINYINT"/>
+        <id property="id" column="id" jdbcType="BIGINT"/>
+        <result property="userAccount" column="user_account" jdbcType="VARCHAR"/>
+        <result property="userPassword" column="user_password" jdbcType="VARCHAR"/>
+        <result property="userSalt" column="user_salt" jdbcType="VARCHAR"/>
+        <result property="userEmail" column="user_email" jdbcType="VARCHAR"/>
+        <result property="userName" column="user_name" jdbcType="VARCHAR"/>
+        <result property="userAvatar" column="user_avatar" jdbcType="VARCHAR"/>
+        <result property="userProfile" column="user_profile" jdbcType="VARCHAR"/>
+        <result property="userType" column="user_type" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="isDelete" column="is_delete" jdbcType="TINYINT"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,userAccount,userPassword,
-        userSalt,userEmail,userName,
-        userAvatar,userProfile,userType,
-        createTime,updateTime,isDelete
+        id, user_account, user_password,
+        user_salt, user_email, user_name,
+        user_avatar, user_profile, user_type,
+        create_time, update_time, is_delete
     </sql>
+
 </mapper>

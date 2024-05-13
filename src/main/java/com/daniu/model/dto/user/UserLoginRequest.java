@@ -11,7 +11,7 @@ import java.io.Serializable;
  * 用户登录请求
  *
  * @author FangDaniu
- * @from daniu-backend-template
+ * @since  2024/05/4
  */
 @Data
 public class UserLoginRequest implements Serializable {

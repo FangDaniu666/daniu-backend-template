@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
  * 用户角色枚举
  *
  * @author FangDaniu
- * @from daniu-backend-template
+ * @since  2024/05/4
  */
 public enum UserRoleEnum {
 

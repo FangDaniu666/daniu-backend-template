@@ -13,7 +13,7 @@ import java.io.Serializable;
  * 用户查询请求
  *
  * @author FangDaniu
- * @from daniu-backend-template
+ * @since  2024/05/4
  */
 @EqualsAndHashCode(callSuper = true)
 @Data

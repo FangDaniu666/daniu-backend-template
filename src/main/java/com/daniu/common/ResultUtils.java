@@ -4,7 +4,7 @@ package com.daniu.common;
  * 返回工具类
  *
  * @author FangDaniu
- * @from daniu-backend-template
+ * @since  2024/05/4
  */
 public class ResultUtils {
 

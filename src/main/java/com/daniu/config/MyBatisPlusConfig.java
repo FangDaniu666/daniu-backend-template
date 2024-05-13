@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Configuration;
  * MyBatis Plus 配置
  *
  * @author FangDaniu
+ * @since  2024/05/4
  */
 @Configuration
 @MapperScan("com.daniu.mapper")

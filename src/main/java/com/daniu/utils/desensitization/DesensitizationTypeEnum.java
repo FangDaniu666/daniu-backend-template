@@ -1,8 +1,10 @@
 package com.daniu.utils.desensitization;
 
 /**
+ * 脱敏类型枚举
+ *
  * @author FangDaniu
- * @from daniu-backend-template
+ * @since 2024/05/9
  */
 public enum DesensitizationTypeEnum {
     // 自定义
