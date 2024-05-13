@@ -6,7 +6,7 @@
 
 - **Sa-token**：国产轻量级权限验证框架，官方文档请查阅 [sa-token.cc](https://sa-token.cc/index.html)。
 
-- **日志记录工具**：使用 Logback 进行日志记录。
+- **日志记录**：使用 Logback 进行日志记录，用户登录相关信息存储
 
 - **文档生成工具**：结合 Knife4j 可以方便地生成 API 文档。
 
