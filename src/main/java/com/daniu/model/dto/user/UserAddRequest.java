@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -44,5 +45,6 @@ public class UserAddRequest implements Serializable {
      */
     private String userType;
 
+    @Serial
     private static final long serialVersionUID = 1L;
 }

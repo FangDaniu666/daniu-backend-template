@@ -4,7 +4,8 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
-import org.springframework.validation.annotation.Validated;
+
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -16,6 +17,7 @@ import java.io.Serializable;
 @Data
 public class UserRegisterRequest implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 3191241716373120793L;
 
     @NotBlank(message = "用户账号不能为空")

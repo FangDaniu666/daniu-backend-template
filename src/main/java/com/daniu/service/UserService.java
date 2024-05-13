@@ -24,6 +24,7 @@ public interface UserService extends IService<User> {
      *
      * @param userAccount   用户账户
      * @param checkPassword 校验密码
+     * @param user          注册用户
      * @return 新用户 id
      */
     long userRegister(String userAccount, String checkPassword, User user);
@@ -31,8 +32,9 @@ public interface UserService extends IService<User> {
     /**
      * 用户登录
      *
-     * @param userAccount  用户账户
+     * @param userAccount  用户账号
      * @param userPassword 用户密码
+     * @param request      请求
      * @return 脱敏后的用户信息
      */
     LoginUserVO userLogin(String userAccount, String userPassword, HttpServletRequest request);
@@ -40,92 +42,97 @@ public interface UserService extends IService<User> {
     /**
      * 获取当前登录用户
      *
-     * @param
+     * @param loginId 登录id
+     * @return {@link User }
      */
     User getLoginUser(Object loginId);
 
     /**
      * 是否为管理员
      *
-     * @param user
-     * @return
+     * @param user 用户
+     * @return boolean
      */
     boolean isAdmin(User user);
 
     /**
      * 用户注销
+     *
+     * @param loginId 已登录用户id
+     * @return boolean
      */
     boolean userLogout(Object loginId);
 
     /**
      * 新增用户
      *
-     * @param user
-     * @return
+     * @param user 用户
+     * @return boolean
      */
     boolean saveUser(User user);
 
     /**
      * 删除用户
      *
-     * @param deleteId
-     * @return
+     * @param deleteId 待删除用户id
+     * @return boolean
      */
     boolean deleteUserById(Long deleteId);
 
     /**
      * 更新用户
      *
-     * @param user
-     * @return
+     * @param user 用户
+     * @return boolean
      */
     boolean updateUser(User user);
 
     /**
      * 更新当前登录用户信息
      *
-     * @param loginId
-     * @param user
-     * @return
+     * @param loginId 已登录用户id
+     * @param user    用户
+     * @return boolean
      */
     boolean updateMyUser(Object loginId, User user);
 
     /**
      * 分页获取脱敏的用户信息
      *
-     * @param userQueryRequest
-     * @return
+     * @param userQueryRequest 用户查询请求
+     * @return {@link Page }<{@link UserVO }>
      */
     Page<UserVO> getUserVOPage(UserQueryRequest userQueryRequest);
 
     /**
      * 获取脱敏的已登录用户信息
      *
-     * @return
+     * @param user 已登录用户
+     * @return {@link LoginUserVO }
      */
     LoginUserVO getLoginUserVO(User user);
 
     /**
      * 获取脱敏的用户信息
      *
-     * @param user
-     * @return
+     * @param user 用户
+     * @return {@link UserVO }
      */
     UserVO getUserVO(User user);
 
     /**
      * 获取脱敏的用户信息
      *
-     * @param userList
-     * @return
+     * @param userList 用户列表
+     * @return {@link List }<{@link UserVO }>
      */
     List<UserVO> getUserVO(List<User> userList);
 
     /**
      * 获取查询条件
      *
-     * @param userQueryRequest
-     * @return
+     * @param userQueryRequest 用户查询请求
+     * @return {@link QueryWrapper }<{@link User }>
      */
     QueryWrapper<User> getQueryWrapper(UserQueryRequest userQueryRequest);
 

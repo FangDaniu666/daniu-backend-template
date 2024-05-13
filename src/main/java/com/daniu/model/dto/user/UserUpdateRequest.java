@@ -1,10 +1,9 @@
 package com.daniu.model.dto.user;
 
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.Data;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -41,5 +40,6 @@ public class UserUpdateRequest implements Serializable {
      */
     private String userType;
 
+    @Serial
     private static final long serialVersionUID = 1L;
 }

@@ -1,5 +1,6 @@
 package com.daniu.model.enums;
 
+import lombok.Getter;
 import org.apache.commons.lang3.ObjectUtils;
 
 import java.util.Arrays;
@@ -10,8 +11,9 @@ import java.util.stream.Collectors;
  * 用户角色枚举
  *
  * @author FangDaniu
- * @since  2024/05/4
+ * @since 2024/05/4
  */
+@Getter
 public enum UserRoleEnum {
 
     USER("用户", "user"),
@@ -30,7 +32,7 @@ public enum UserRoleEnum {
     /**
      * 获取值列表
      *
-     * @return
+     * @return {@link List }<{@link String }>
      */
     public static List<String> getValues() {
         return Arrays.stream(values()).map(item -> item.value).collect(Collectors.toList());
@@ -39,8 +41,8 @@ public enum UserRoleEnum {
     /**
      * 根据 value 获取枚举
      *
-     * @param value
-     * @return
+     * @param value 值
+     * @return {@link UserRoleEnum }
      */
     public static UserRoleEnum getEnumByValue(String value) {
         if (ObjectUtils.isEmpty(value)) {
@@ -54,11 +56,4 @@ public enum UserRoleEnum {
         return null;
     }
 
-    public String getValue() {
-        return value;
-    }
-
-    public String getText() {
-        return text;
-    }
 }

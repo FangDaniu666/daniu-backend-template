@@ -5,10 +5,7 @@ import com.daniu.model.entity.User;
 import com.daniu.service.UserService;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Component;
-
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -29,9 +26,8 @@ public class StpInterfaceImpl implements StpInterface {
      */
     @Override
     public List<String> getPermissionList(Object loginId, String loginType) {
-        List<String> list = new ArrayList<>();
         // todo 自行添加逻辑
-        return list;
+        return new ArrayList<>();
     }
 
     /**

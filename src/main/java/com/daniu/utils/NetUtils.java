@@ -7,7 +7,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.InetAddress;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
@@ -23,8 +22,8 @@ public class NetUtils {
     /**
      * 获取客户端 IP 地址
      *
-     * @param request
-     * @return
+     * @param request 请求
+     * @return {@link String }
      */
     public static String getIpAddress(HttpServletRequest request) {
         String ip = request.getHeader("x-forwarded-for");

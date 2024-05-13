@@ -80,7 +80,9 @@ public class LoginLogController {
     }
 
     /**
-     * 导出
+     * 导出为Excel文件
+     *
+     * @return {@link BaseResponse }<{@link String }>
      */
     //@SysLog(module = "登录日志", type = "导出")
     @GetMapping("/exportData")

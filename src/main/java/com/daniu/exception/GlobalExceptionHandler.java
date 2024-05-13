@@ -3,11 +3,12 @@ package com.daniu.exception;
 import cn.dev33.satoken.exception.NotLoginException;
 import cn.dev33.satoken.util.SaResult;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import com.daniu.common.ErrorCode;
+
+import java.util.Objects;
 
 /**
  * 全局异常处理器
@@ -22,20 +23,21 @@ public class GlobalExceptionHandler {
 
     /**
      * 捕捉参数校验异常
-     * @param e
-     * @return
+     *
+     * @param e e
+     * @return {@link SaResult }
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public SaResult handleValidationException(MethodArgumentNotValidException e) {
-        String errorMessage = e.getBindingResult().getFieldError().getDefaultMessage();
+        String errorMessage = Objects.requireNonNull(e.getBindingResult().getFieldError()).getDefaultMessage();
         return SaResult.error(errorMessage).setCode(ErrorCode.PARAMS_ERROR.getCode());
     }
 
     /**
      * 捕捉系统业务异常
      *
-     * @param e
-     * @return
+     * @param e e
+     * @return {@link SaResult }
      */
     @ExceptionHandler(BusinessException.class)
     public SaResult businessExceptionHandler(BusinessException e) {
@@ -46,8 +48,8 @@ public class GlobalExceptionHandler {
     /**
      * 捕捉运行时异常
      *
-     * @param e
-     * @return
+     * @param e e
+     * @return {@link SaResult }
      */
     @ExceptionHandler(RuntimeException.class)
     public SaResult runtimeExceptionHandler(RuntimeException e) {
@@ -59,17 +61,16 @@ public class GlobalExceptionHandler {
     /**
      * Sa-Token全局异常拦截（拦截项目中的NotLoginException异常）
      *
-     * @param nle
-     * @return
-     * @throws Exception
+     * @param nle nle
+     * @return {@link SaResult }
      */
     @ExceptionHandler(NotLoginException.class)
-    public SaResult handlerNotLoginException(NotLoginException nle) throws Exception {
+    public SaResult handlerNotLoginException(NotLoginException nle) {
         // 打印堆栈，以供调试
         // nle.printStackTrace();
 
         // 判断场景值，定制化异常信息
-        String message = "";
+        String message;
         if (nle.getType().equals(NotLoginException.NOT_TOKEN)) {
             message = "未能读取到有效 token";
         } else if (nle.getType().equals(NotLoginException.INVALID_TOKEN)) {
@@ -95,12 +96,14 @@ public class GlobalExceptionHandler {
     /**
      * 捕捉其余所有异常
      *
-     * @param e
-     * @return
+     * @param e e
+     * @return {@link SaResult }
      */
     @ExceptionHandler
     public SaResult handlerException(Exception e) {
-        e.printStackTrace();
+        // todo 统一异常处理
+        log.error("Exception", e);
+        // e.printStackTrace();
         return SaResult.error(e.getMessage());
     }
 

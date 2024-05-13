@@ -11,6 +11,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
 import javax.sql.DataSource;
 import java.io.IOException;
 
@@ -18,7 +19,7 @@ import java.io.IOException;
  * druid 配置多数据源
  *
  * @author FangDaniu
- * @since  2024/05/4
+ * @since 2024/05/4
  */
 @Configuration
 public class DruidConfig {
@@ -53,7 +54,7 @@ public class DruidConfig {
         // 创建filter进行过滤
         Filter filter = new Filter() {
             @Override
-            public void init(FilterConfig filterConfig) throws ServletException {
+            public void init(FilterConfig filterConfig) {
             }
 
             @Override

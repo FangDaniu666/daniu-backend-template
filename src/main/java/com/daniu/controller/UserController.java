@@ -6,8 +6,6 @@ import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.daniu.constant.UserConstant;
 import com.daniu.model.vo.UserWithEmailVO;
-import com.daniu.utils.HttpUtil;
-import com.daniu.utils.NetUtils;
 import com.daniu.utils.NullAwareBeanUtils;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
@@ -47,7 +45,7 @@ public class UserController {
     /**
      * 用户注册
      *
-     * @param userRegisterRequest
+     * @param userRegisterRequest 用户注册请求
      * @return BaseResponse
      */
     @PostMapping("/register")
@@ -67,7 +65,8 @@ public class UserController {
     /**
      * 用户登录
      *
-     * @param userLoginRequest
+     * @param userLoginRequest 用户登录请求
+     * @param request          请求
      * @return BaseResponse
      */
     @PostMapping("/login")
@@ -111,7 +110,7 @@ public class UserController {
     /**
      * 创建用户
      *
-     * @param userAddRequest
+     * @param userAddRequest 用户添加请求
      * @return BaseResponse
      */
     @PostMapping("/add")
@@ -128,7 +127,7 @@ public class UserController {
     /**
      * 删除用户
      *
-     * @param deleteRequest
+     * @param deleteRequest 删除请求
      * @return BaseResponse
      */
     @PostMapping("/delete")
@@ -142,7 +141,7 @@ public class UserController {
     /**
      * 更新用户
      *
-     * @param userUpdateRequest
+     * @param userUpdateRequest 用户更新请求
      * @return BaseResponse
      */
     @PostMapping("/update")
@@ -159,7 +158,7 @@ public class UserController {
     /**
      * 更新个人信息
      *
-     * @param userUpdateMyRequest
+     * @param userUpdateMyRequest 用户更新个人用户请求
      * @return BaseResponse
      */
     @PostMapping("/update/my")
@@ -181,7 +180,7 @@ public class UserController {
     /**
      * 根据 id 获取用户（仅管理员）
      *
-     * @param id
+     * @param id 用户id
      * @return BaseResponse
      */
     @GetMapping("/get")
@@ -195,7 +194,7 @@ public class UserController {
     /**
      * 根据 id 获取包装类
      *
-     * @param id
+     * @param id 用户id
      * @return BaseResponse
      */
     @GetMapping("/get/vo")
@@ -208,7 +207,7 @@ public class UserController {
     /**
      * 分页获取用户列表（仅管理员）
      *
-     * @param userQueryRequest
+     * @param userQueryRequest 用户查询请求
      * @return BaseResponse
      */
     @PostMapping("/list/page")
@@ -223,7 +222,7 @@ public class UserController {
     /**
      * 分页获取用户封装列表
      *
-     * @param userQueryRequest
+     * @param userQueryRequest 用户查询请求
      * @return BaseResponse
      */
     @PostMapping("/list/page/vo")
@@ -239,7 +238,7 @@ public class UserController {
     /**
      * 邮箱字段脱敏
      *
-     * @param id
+     * @param id 用户id
      * @return BaseResponse
      */
     @GetMapping("/get/mail/vo")

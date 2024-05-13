@@ -2,11 +2,11 @@ package com.daniu.model.dto.user;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import com.daniu.common.PageRequest;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -45,5 +45,6 @@ public class UserQueryRequest extends PageRequest implements Serializable {
      */
     private String userType;
 
+    @Serial
     private static final long serialVersionUID = 1L;
 }

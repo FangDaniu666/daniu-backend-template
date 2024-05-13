@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -50,5 +51,6 @@ public class UserUpdateMyRequest implements Serializable {
     private String userPassword;
 
 
+    @Serial
     private static final long serialVersionUID = 1L;
 }

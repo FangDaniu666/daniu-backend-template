@@ -1,11 +1,14 @@
 package com.daniu.common;
 
+import lombok.Getter;
+
 /**
  * 自定义错误码
  *
  * @author FangDaniu
  * @since  2024/05/4
  */
+@Getter
 public enum ErrorCode {
 
     SUCCESS(0, "ok"),
@@ -33,14 +36,6 @@ public enum ErrorCode {
         this.message = message;
     }
 
-    public int getCode() {
-        return code;
-    }
-
     public String getValue() { return message; }
-
-    public String getMessage() {
-        return message;
-    }
 
 }

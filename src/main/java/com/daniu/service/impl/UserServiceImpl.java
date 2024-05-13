@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
  * 用户服务实现
  *
  * @author FangDaniu
- * @since  2024/05/4
+ * @since 2024/05/4
  */
 @Service
 @Slf4j
@@ -51,9 +51,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Resource
     private LoginLogService loginLogService;
 
-    /**
-     * 盐值，混淆密码
-     */
+    // 盐值，混淆密码
     private static final String SALT = "80bcac91-6c73-46e2-86c4-47ed0eb10496";
 
     /**
@@ -61,14 +59,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      *
      * @param userAccount   用户账户
      * @param checkPassword 校验密码
-     * @param user
+     * @param user          注册用户
+     * @return 新用户 id
      */
     @Override
     @Transactional
     @CacheEvict(value = "userCache", allEntries = true)
     public long userRegister(String userAccount, String checkPassword, User user) {
-        // 1. 校验
-        // 密码和校验密码相同
+        // 密码和校验密码是否相同
         if (!user.getUserPassword().equals(checkPassword))
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "两次输入的密码不一致");
         synchronized (userAccount.intern()) {
@@ -77,9 +75,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             queryWrapper.eq("userAccount", userAccount);
             long count = this.baseMapper.selectCount(queryWrapper);
             if (count > 0) throw new BusinessException(ErrorCode.PARAMS_ERROR, "账号重复");
-            // 2. 加密
+            // 密码加密
             String encryptPassword = DigestUtils.md5DigestAsHex((SALT + user.getUserPassword()).getBytes());
-            // 3. 插入数据
+            // 插入数据
             user.setUserPassword(encryptPassword);
             user.setUserAccount(userAccount);
             boolean saveResult = this.save(user);
@@ -91,8 +89,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     /**
      * 用户登录
      *
-     * @param userAccount  用户账户
+     * @param userAccount  用户账号
      * @param userPassword 用户密码
+     * @param request      请求
+     * @return 脱敏后的用户信息
      */
     @Override
     public LoginUserVO userLogin(String userAccount, String userPassword, HttpServletRequest request) {
@@ -134,6 +134,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     /**
      * 获取当前登录用户
+     *
+     * @param loginId 已登录用户id
+     * @return {@link User }
      */
     @Override
     @Cacheable(value = "loginUserCache", key = "#loginId")
@@ -148,8 +151,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     /**
      * 是否为管理员
      *
-     * @param user
-     * @return
+     * @param user 用户
+     * @return boolean
      */
     @Override
     public boolean isAdmin(User user) {
@@ -158,6 +161,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     /**
      * 用户注销
+     *
+     * @param loginId 已登录用户id
+     * @return boolean
      */
     @Override
     @CacheEvict(value = "loginUserCache", key = "#loginId")
@@ -172,8 +178,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     /**
      * 新增用户
      *
-     * @param user
-     * @return
+     * @param user 用户
+     * @return boolean
      */
     @Override
     @Transactional
@@ -185,8 +191,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     /**
      * 删除用户
      *
-     * @param deleteId
-     * @return
+     * @param deleteId 待删除用户id
+     * @return boolean
      */
     @Override
     @Transactional
@@ -203,8 +209,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     /**
      * 更新用户
      *
-     * @param user
-     * @return
+     * @param user 用户
+     * @return boolean
      */
     @Override
     @Transactional
@@ -219,9 +225,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     /**
      * 更新当前登录用户信息
      *
-     * @param loginId
-     * @param user
-     * @return
+     * @param loginId 已登录用户id
+     * @param user    用户
+     * @return boolean
      */
     @Override
     @Transactional
@@ -275,6 +281,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         return userList.stream().map(this::getUserVO).collect(Collectors.toList());
     }
 
+    /**
+     * 获取查询条件
+     *
+     * @param userQueryRequest 用户查询请求
+     * @return {@link QueryWrapper }<{@link User }>
+     */
     @Override
     public QueryWrapper<User> getQueryWrapper(UserQueryRequest userQueryRequest) {
         if (userQueryRequest == null) throw new BusinessException(ErrorCode.PARAMS_ERROR, "请求参数为空");

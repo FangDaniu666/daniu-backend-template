@@ -25,8 +25,8 @@ public class SpringContextUtils implements ApplicationContextAware {
     /**
      * 通过名称获取 Bean
      *
-     * @param beanName
-     * @return
+     * @param beanName bean名称
+     * @return {@link Object }
      */
     public static Object getBean(String beanName) {
         return applicationContext.getBean(beanName);
@@ -35,9 +35,8 @@ public class SpringContextUtils implements ApplicationContextAware {
     /**
      * 通过 class 获取 Bean
      *
-     * @param beanClass
-     * @param <T>
-     * @return
+     * @param beanClass bean类型
+     * @return {@link T }
      */
     public static <T> T getBean(Class<T> beanClass) {
         return applicationContext.getBean(beanClass);
@@ -46,10 +45,9 @@ public class SpringContextUtils implements ApplicationContextAware {
     /**
      * 通过名称和类型获取 Bean
      *
-     * @param beanName
-     * @param beanClass
-     * @param <T>
-     * @return
+     * @param beanName  bean名称
+     * @param beanClass bean类
+     * @return {@link T }
      */
     public static <T> T getBean(String beanName, Class<T> beanClass) {
         return applicationContext.getBean(beanName, beanClass);

@@ -1,6 +1,7 @@
 package com.daniu.exception;
 
 import com.daniu.common.ErrorCode;
+import lombok.Getter;
 
 /**
  * 自定义异常类
@@ -8,17 +9,13 @@ import com.daniu.common.ErrorCode;
  * @author FangDaniu
  * @since  2024/05/4
  */
+@Getter
 public class BusinessException extends RuntimeException {
 
     /**
      * 错误码
      */
     private final int code;
-
-    public BusinessException(int code, String message) {
-        super(message);
-        this.code = code;
-    }
 
     public BusinessException(ErrorCode errorCode) {
         super(errorCode.getMessage());
@@ -30,7 +27,4 @@ public class BusinessException extends RuntimeException {
         this.code = errorCode.getCode();
     }
 
-    public int getCode() {
-        return code;
-    }
 }
