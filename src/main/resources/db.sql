@@ -30,3 +30,17 @@ create table login_log
     login_state int          null comment '登录状态: 0-失败，1-成功'
 );
 
+SELECT id,
+       user_account,
+       user_password,
+       user_salt,
+       user_email,
+       user_name,
+       user_avatar,
+       user_profile,
+       user_type,
+       create_time,
+       update_time,
+       is_delete
+FROM user
+WHERE is_delete = 0
