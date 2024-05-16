@@ -70,11 +70,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if (!user.getUserPassword().equals(checkPassword))
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "两次输入的密码不一致");
         synchronized (userAccount.intern()) {
-            // 账户不能重复
+            // 账号和邮箱不能重复
             QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("userAccount", userAccount);
+            queryWrapper.eq("user_account", userAccount).or().eq("user_email", user.getUserEmail());
             long count = this.baseMapper.selectCount(queryWrapper);
-            if (count > 0) throw new BusinessException(ErrorCode.PARAMS_ERROR, "账号重复");
+            if (count > 0) throw new BusinessException(ErrorCode.PARAMS_ERROR, "账号或邮箱重复");
             // 密码加密
             String encryptPassword = DigestUtils.md5DigestAsHex((SALT + user.getUserPassword()).getBytes());
             // 插入数据

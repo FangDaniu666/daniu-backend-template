@@ -4,6 +4,7 @@ import cn.dev33.satoken.annotation.SaCheckRole;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.daniu.annotation.SysLog;
 import com.daniu.constant.UserConstant;
 import com.daniu.model.vo.UserWithEmailVO;
 import com.daniu.utils.NullAwareBeanUtils;
@@ -48,6 +49,7 @@ public class UserController {
      * @param userRegisterRequest 用户注册请求
      * @return BaseResponse
      */
+    @SysLog(module = "登录管理", type = "注册")
     @PostMapping("/register")
     public BaseResponse<Long> userRegister(@Validated @RequestBody UserRegisterRequest userRegisterRequest) {
         log.info("userRegister");
@@ -69,6 +71,7 @@ public class UserController {
      * @param request          请求
      * @return BaseResponse
      */
+    @SysLog(module = "登录管理", type = "登录")
     @PostMapping("/login")
     public BaseResponse<LoginUserVO> userLogin(@Validated @RequestBody UserLoginRequest userLoginRequest, HttpServletRequest request) {
         if (userLoginRequest == null) throw new BusinessException(ErrorCode.PARAMS_ERROR);
@@ -79,10 +82,10 @@ public class UserController {
         return ResultUtils.success(loginUserVO);
     }
 
-
     /**
      * 用户注销
      */
+    @SysLog(module = "登录管理", type = "退出登录")
     @PostMapping("/logout")
     public BaseResponse<Boolean> userLogout() {
         if (!StpUtil.isLogin()) throw new BusinessException(ErrorCode.OPERATION_ERROR, "未登录");
@@ -94,6 +97,7 @@ public class UserController {
     /**
      * 获取当前登录用户
      */
+    @SysLog(module = "登录管理", type = "获取用户信息")
     @GetMapping("/get/login")
     public BaseResponse<LoginUserVO> getLoginUser() {
         // 先判断是否已登录
@@ -113,6 +117,7 @@ public class UserController {
      * @param userAddRequest 用户添加请求
      * @return BaseResponse
      */
+    @SysLog(module = "用户管理(管理员)", type = "增加")
     @PostMapping("/add")
     @SaCheckRole(UserConstant.ADMIN_ROLE)
     public BaseResponse<Long> addUser(@Validated @RequestBody UserAddRequest userAddRequest) {
@@ -130,6 +135,7 @@ public class UserController {
      * @param deleteRequest 删除请求
      * @return BaseResponse
      */
+    @SysLog(module = "用户管理(管理员)", type = "删除")
     @PostMapping("/delete")
     @SaCheckRole(UserConstant.ADMIN_ROLE)
     public BaseResponse<Boolean> deleteUser(@Validated @RequestBody DeleteRequest deleteRequest) {
@@ -144,6 +150,7 @@ public class UserController {
      * @param userUpdateRequest 用户更新请求
      * @return BaseResponse
      */
+    @SysLog(module = "用户管理(管理员)", type = "修改")
     @PostMapping("/update")
     @SaCheckRole(UserConstant.ADMIN_ROLE)
     public BaseResponse<Long> updateUser(@Validated @RequestBody UserUpdateRequest userUpdateRequest) {
@@ -161,6 +168,7 @@ public class UserController {
      * @param userUpdateMyRequest 用户更新个人用户请求
      * @return BaseResponse
      */
+    @SysLog(module = "用户管理", type = "修改个人信息")
     @PostMapping("/update/my")
     public BaseResponse<Long> updateMyUser(@Validated @RequestBody UserUpdateMyRequest userUpdateMyRequest) {
         if (userUpdateMyRequest == null) throw new BusinessException(ErrorCode.PARAMS_ERROR);
@@ -183,6 +191,7 @@ public class UserController {
      * @param id 用户id
      * @return BaseResponse
      */
+    @SysLog(module = "用户管理(管理员)", type = "修改个人信息")
     @GetMapping("/get")
     @SaCheckRole(UserConstant.ADMIN_ROLE)
     public BaseResponse<User> getUserById(@Validated @Min(value = 1, message = "无效id") long id) {
@@ -197,6 +206,7 @@ public class UserController {
      * @param id 用户id
      * @return BaseResponse
      */
+    @SysLog(module = "用户管理", type = "查询用户信息")
     @GetMapping("/get/vo")
     public BaseResponse<UserVO> getUserVOById(@Validated @Min(value = 1, message = "无效id") long id) {
         BaseResponse<User> response = getUserById(id);
@@ -210,6 +220,7 @@ public class UserController {
      * @param userQueryRequest 用户查询请求
      * @return BaseResponse
      */
+    @SysLog(module = "用户管理(管理员)", type = "查询用户列表")
     @PostMapping("/list/page")
     @SaCheckRole(UserConstant.ADMIN_ROLE)
     public BaseResponse<Page<User>> listUserByPage(@RequestBody UserQueryRequest userQueryRequest) {
@@ -225,6 +236,7 @@ public class UserController {
      * @param userQueryRequest 用户查询请求
      * @return BaseResponse
      */
+    @SysLog(module = "用户管理", type = "查询用户列表")
     @PostMapping("/list/page/vo")
     public BaseResponse<Page<UserVO>> listUserVOByPage(@NotNull @RequestBody UserQueryRequest userQueryRequest) {
         if (userQueryRequest == null) {
@@ -241,6 +253,7 @@ public class UserController {
      * @param id 用户id
      * @return BaseResponse
      */
+    @SysLog(module = "用户管理", type = "查询用户信息(邮箱脱敏)")
     @GetMapping("/get/mail/vo")
     public BaseResponse<UserWithEmailVO> getUserWithEmailById(@Validated @Min(value = 1, message = "无效id") long id) {
         User user = userService.getById(id);

@@ -5,6 +5,7 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.daniu.annotation.SysLog;
 import com.daniu.common.BaseResponse;
 import com.daniu.common.ErrorCode;
 import com.daniu.common.ResultUtils;
@@ -39,7 +40,7 @@ public class LoginLogController {
      * @param loginLog 条件
      * @return 结果
      */
-    //@SysLog(module = "登录日志", type = "查询")
+    @SysLog(module = "登录日志", type = "查询登录日志")
     @PostMapping("/page/{pIndex}/{pSize}")
     @SaCheckRole(UserConstant.ADMIN_ROLE)
     public BaseResponse<Page<LoginLog>> getPage(@PathVariable Integer pIndex, @PathVariable Integer pSize, @RequestBody(required = false) LoginLogQueryDto loginLog) {
@@ -70,7 +71,7 @@ public class LoginLogController {
      * @param idList 主键集合
      * @return 结果
      */
-    //@SysLog(module = "登录日志", type = "批量删除")
+    @SysLog(module = "登录日志", type = "批量删除登录日志")
     @DeleteMapping("/batchRemove")
     @SaCheckRole(UserConstant.ADMIN_ROLE)
     public BaseResponse<Boolean> batchRemove(@RequestBody List<Integer> idList) {
@@ -84,7 +85,7 @@ public class LoginLogController {
      *
      * @return {@link BaseResponse }<{@link String }>
      */
-    //@SysLog(module = "登录日志", type = "导出")
+    @SysLog(module = "登录日志", type = "导出登录日志")
     @GetMapping("/exportData")
     @SaCheckRole(UserConstant.ADMIN_ROLE)
     public BaseResponse<String> exportData() {

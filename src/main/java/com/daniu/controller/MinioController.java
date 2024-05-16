@@ -1,5 +1,6 @@
 package com.daniu.controller;
 
+import com.daniu.annotation.SysLog;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
@@ -23,6 +24,7 @@ public class MinioController {
     MinioUtils minioService;
 
     //列表
+    @SysLog(module = "Minio服务", type = "查询Minio文件列表")
     @GetMapping("/list")
     public BaseResponse<List<String>> list() {
         List<String> strings = minioService.listObjects();
@@ -30,6 +32,7 @@ public class MinioController {
     }
 
     //删除
+    @SysLog(module = "Minio服务", type = "删除文件")
     @PutMapping("/delete")
     public BaseResponse<Boolean> delete(@RequestParam String filename) {
         minioService.deleteObject(filename);
@@ -37,6 +40,7 @@ public class MinioController {
     }
 
     //上传文件
+    @SysLog(module = "Minio服务", type = "上传文件")
     @PostMapping("/upload")
     public BaseResponse<String> upload(@RequestParam("file") MultipartFile file) {
         try {
@@ -54,6 +58,7 @@ public class MinioController {
     }
 
     //下载minio服务的文件
+    @SysLog(module = "Minio服务", type = "下载文件")
     @GetMapping("/download")
     public void download(@RequestParam String filename, HttpServletResponse response) {
         try {
@@ -70,6 +75,7 @@ public class MinioController {
     }
 
     //获取minio文件的下载地址
+    @SysLog(module = "Minio服务", type = "获取文件下载地址")
     @GetMapping("/getHttpUrl")
     public BaseResponse<String> getHttpUrl(@RequestParam String filename) {
         try {
