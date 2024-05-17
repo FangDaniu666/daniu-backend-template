@@ -43,7 +43,7 @@ public class LoginLog implements Serializable {
     private String loginAddr;
 
     /**
-     * 驱动名称
+     * 浏览器名称
      */
     private String driverName;
 

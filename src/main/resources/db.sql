@@ -27,7 +27,7 @@ CREATE TABLE `login_log`
     `login_time`  DATETIME         NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '登录时间',
     `login_ip`    varchar(255)     NOT NULL DEFAULT 'unknown' COMMENT '登录IP',
     `login_addr`  varchar(255)     NOT NULL DEFAULT 'unknown' COMMENT '登录地址',
-    `driver_name` varchar(255)     NOT NULL DEFAULT 'unknown' COMMENT '驱动名称',
+    `driver_name` varchar(255)     NOT NULL DEFAULT 'unknown' COMMENT '浏览器名称',
     `os_name`     varchar(255)     NOT NULL DEFAULT 'unknown' COMMENT '操作系统',
     `login_state` TINYINT(1)       NOT NULL DEFAULT 0 COMMENT '登录状态: 0-失败，1-成功',
     PRIMARY KEY (`id`),
