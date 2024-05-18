@@ -40,12 +40,21 @@ public class CodeGenerator {
                             .addTablePrefix("t_", "c_") // 设置过滤表前缀
                             .entityBuilder()
                             .enableLombok()
+                            // .javaTemplate("/templates/entity.java") // 设置实体类模板
+
+                            .controllerBuilder()
+                            .enableRestStyle()  // 开启生成@RestController 控制器
+
+                            .serviceBuilder()
+                            // .serviceTemplate("/templates/service.java") // 设置 Service 模板
+                            // .serviceImplTemplate("/templates/serviceImpl.java") // 设置 ServiceImpl 模板
+
                             .mapperBuilder()
                             .superClass(BaseMapper.class)
-                            .enableBaseResultMap()
-                            .enableBaseColumnList()
-                            .formatMapperFileName("%sMapper")
-                            .formatXmlFileName("%sXml")
+                            .enableBaseResultMap()  // 启用 BaseResultMap 生成
+                            .enableBaseColumnList() // 启用 BaseColumnList
+                            .formatMapperFileName("%sMapper")   // 格式化 Mapper 文件名称
+                            .formatXmlFileName("%sXml") // 格式化 XML 实现类文件名称
                             .enableFileOverride();//删除已存在的
                 })
                 .injectionConfig(builder -> {
