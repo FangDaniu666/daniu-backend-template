@@ -28,13 +28,14 @@ public class CodeGenerator {
                     ;
                 })
                 .packageConfig(builder -> builder.parent("com.daniu")
-                        .moduleName("auto")
-                        .entity("po")
+                        .moduleName("generate")
+                        .entity("model.entity")
                         .service("service")
                         .serviceImpl("service.impl")
                         .mapper("mapper")
                         .xml("mapper.xml")
-                        .controller("controller")).strategyConfig(builder -> {
+                        .controller("controller"))
+                .strategyConfig(builder -> {
                     builder.addInclude("user") // 设置需要生成的表名
                             .addTablePrefix("t_", "c_") // 设置过滤表前缀
                             .mapperBuilder()
