@@ -26,8 +26,8 @@ public class JwtUtils {
      */
     private static final String key = "2407595a-e5e3-4d93-b422-d10433e8c769";
 
-    public static String createToken(Long id, String mobile) {
-        log.info("开始生成JWT token，id：{}，mobile：{}", id, mobile);
+    public static String createToken(Long id, String userName) {
+        log.info("开始生成JWT token，id：{}，userName：{}", id, userName);
         GlobalBouncyCastleProvider.setUseBouncyCastle(false);
         DateTime now = DateTime.now();
         DateTime expTime = now.offsetNew(DateField.HOUR, 24);
@@ -40,7 +40,7 @@ public class JwtUtils {
         payload.put(JWTPayload.NOT_BEFORE, now);
         // 内容
         payload.put("id", id);
-        payload.put("mobile", mobile);
+        payload.put("username", userName);
         String token = JWTUtil.createToken(payload, key.getBytes());
         log.info("生成JWT token：{}", token);
         return token;
@@ -73,9 +73,9 @@ public class JwtUtils {
     }
 
     public static void main(String[] args) {
-        createToken(1L, "123");
+        createToken(1L, "FangDaniu");
 
-        String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYmYiOjE3MTYxMjk3MDUsIm1vYmlsZSI6IjEyMyIsImlkIjoxLCJleHAiOjE3MTYyMTYxMDUsImlhdCI6MTcxNjEyOTcwNX0.UYn0HYWbTNQB1xVuqHvkpbVAXfd8599ntEA0xF5TZHY";
+        String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYmYiOjE3MTYxMjk4NzYsImlkIjoxLCJleHAiOjE3MTYyMTYyNzYsImlhdCI6MTcxNjEyOTg3NiwidXNlcm5hbWUiOiJGYW5nRGFuaXUifQ.NGrVz-0VrabRgQAFnLgITBU49GaMsRXJL4cx5F4QQ1g";
         validate(token);
 
         getJSONObject(token);
