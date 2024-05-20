@@ -26,6 +26,13 @@ public class JwtUtils {
      */
     private static final String key = "2407595a-e5e3-4d93-b422-d10433e8c769";
 
+    /**
+     * 创建token
+     *
+     * @param id       用户id
+     * @param userName 用户名
+     * @return {@link String }
+     */
     public static String createToken(Long id, String userName) {
         log.info("开始生成JWT token，id：{}，userName：{}", id, userName);
         GlobalBouncyCastleProvider.setUseBouncyCastle(false);
@@ -46,6 +53,12 @@ public class JwtUtils {
         return token;
     }
 
+    /**
+     * 验证token
+     *
+     * @param token token
+     * @return boolean
+     */
     public static boolean validate(String token) {
         try {
             log.info("开始JWT token校验，token：{}", token);
@@ -61,6 +74,12 @@ public class JwtUtils {
         }
     }
 
+    /**
+     * 获取token原始内容
+     *
+     * @param token token
+     * @return {@link JSONObject }
+     */
     public static JSONObject getJSONObject(String token) {
         GlobalBouncyCastleProvider.setUseBouncyCastle(false);
         JWT jwt = JWTUtil.parseToken(token).setKey(key.getBytes());
