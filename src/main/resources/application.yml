@@ -37,14 +37,14 @@ spring:
       org:
         quartz:
           # JobStore 相关配置
-          jobStore:
-            dataSource: quartzDataSource # 使用的数据源
-            class: org.quartz.impl.jdbcjobstore.JobStoreTX # JobStore 实现类
-            driverDelegateClass: org.quartz.impl.jdbcjobstore.StdJDBCDelegate
-            tablePrefix: QRTZ_ # Quartz 表前缀
-            isClustered: true # 是集群模式
-            clusterCheckinInterval: 1000
-            useProperties: false
+#          jobStore:
+#            dataSource: quartzDataSource # 使用的数据源
+#            class: org.quartz.impl.jdbcjobstore.JobStoreTX # JobStore 实现类
+#            driverDelegateClass: org.quartz.impl.jdbcjobstore.StdJDBCDelegate
+#            tablePrefix: QRTZ_ # Quartz 表前缀
+#            isClustered: true # 是集群模式
+#            clusterCheckinInterval: 1000
+#            useProperties: false
           # 线程池相关配置
           threadPool:
             threadCount: 25 # 线程池大小。默认为 10 。
