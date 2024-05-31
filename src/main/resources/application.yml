@@ -38,6 +38,8 @@ spring:
     properties:
       org:
         quartz:
+          jobStore:
+            tablePrefix: QRTZ_ # Quartz 表前缀
           threadPool:
             threadCount: 25 # 线程池大小。默认为 10 。
             threadPriority: 5 # 线程优先级
