@@ -45,7 +45,6 @@ spring:
             threadPriority: 5 # 线程优先级
             class: org.quartz.simpl.SimpleThreadPool # 线程池类型
 
-
 # todo 使用需修改参数，否则则注释
 minio:
   endpoint: http://192.168.2.200:9090
