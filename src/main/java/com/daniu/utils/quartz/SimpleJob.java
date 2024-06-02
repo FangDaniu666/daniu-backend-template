@@ -8,7 +8,12 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.concurrent.atomic.AtomicInteger;
 
-//SimpleJob是一个简单定时任务体，用于打印出当前线程名、当前时间及当前调用次数
+/**
+ * SimpleJob是一个简单定时任务体，用于打印出当前线程名、当前时间及当前调用次数
+ *
+ * @author FangDaniu
+ * @since  2024/06/01
+ */
 public class SimpleJob extends QuartzJobBean {
 
     private final static AtomicInteger counter = new AtomicInteger(1);
